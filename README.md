@@ -5,5 +5,8 @@
 ### Python 程式設計課程基礎
 - https://www.slideshare.net/secret/JMxwoNcQwzm5TD
 
+### 網路爬蟲
+- https://www.slideshare.net/secret/KpVpKc9wNqk8iA
+
 ### 安裝GIT
 - https://git-scm.com/downloads
