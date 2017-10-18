@@ -10,3 +10,6 @@
 
 ### 安裝GIT
 - https://git-scm.com/downloads
+
+### 機器學習投影片
+- https://github.com/ywchiu/cdc_course/blob/master/slides/%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92Python%E5%85%A5%E9%96%80%E8%80%85%E8%AA%B2%E7%A8%8B.pdf
