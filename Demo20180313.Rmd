@@ -78,3 +78,125 @@ bmi_vec[! ( (bmi_vec >= 18.5) & (bmi_vec < 24) )]
 bmi_vec[which(! ( (bmi_vec >= 18.5) & (bmi_vec < 24) ))]
 ```
 
+## Matrix
+```{r}
+
+# concatenate vector 
+a <- c(1,2)
+a <- c(a, 3)
+a
+
+b <- c(4,5)
+d <- c(a,b)
+d
+
+# use vector to create matrix
+kevin <- c(85, 73)
+marry <- c(72, 64)
+jerry <- c(59, 66)
+
+c(kevin, marry, jerry)
+
+matrix(c(kevin, marry, jerry), nrow = 3)
+?matrix
+
+matrix(c(kevin, marry, jerry), nrow = 3 ,byrow = TRUE)
+
+# create matrix with byrow=FALSEand byrow=TRUE
+1:9
+
+matrix(1:9, ncol = 4, nrow = 4)
+
+matrix(1:9, nrow = 3)
+m <- matrix(1:9, nrow = 3, byrow = TRUE)
+
+# filter matrix element by position
+m[1,]
+m[,1]
+m[2,2]
+
+# add column names and row names to matrix
+mat <- matrix(c(kevin, marry, jerry), nrow = 3 ,byrow = TRUE)
+mat
+
+rownames(mat) <- c('kevin', 'marry', 'jerry')
+mat
+
+colnames(mat) <- c('first', 'second')
+mat
+
+mat['kevin',]
+mat[,'first']
+mat['marry', 'second']
+
+
+mat <- matrix(c(kevin, marry, jerry), nrow = 3 ,byrow = TRUE, dimnames = list( c('kevin', 'marry', 'jerry') , c('first', 'second') ) )
+
+# get basic info of a matrix
+dim(mat)
+nrow(mat)
+ncol(mat)
+
+# filter matrix by position, boolean and name
+mat[1,]
+mat[c(TRUE, FALSE, FALSE),]
+mat['kevin',]
+
+mat[,1]
+mat[,c(TRUE, FALSE)]
+mat[,'first']
+
+mat[c(2,3),]
+mat[2:3,]
+mat[c(FALSE, TRUE, TRUE), ]
+mat[c('marry', 'jerry'),]
+
+mat[2,1]
+mat['marry', 'first']
+
+# row bind
+mat2 <- rbind(mat, c(78, 63))
+rownames(mat2)[4] <- 'sam'
+mat2
+
+# column bind
+mat3 <- cbind(mat, c(82, 77, 70))
+mat3
+colnames(mat3)[3] 
+colnames(mat3)[3] <- 'third'
+mat3
+
+# matrix computation
+m1 <-matrix(1:4, byrow=TRUE, nrow=2)
+m1
+
+m2 <-matrix(5:8, byrow=TRUE, nrow=2)
+m2
+
+m1 + m2
+m1 - m2
+m1 * m2
+m1 / m2
+
+mat2
+rowSums(mat2)
+colSums(mat2)
+?rowSums
+
+# Product of matrix
+m1  *  m2
+m1 %*% m2
+
+# 9 X 1
+m1 <- matrix(1:9, nrow = 9)
+m1
+
+# 1 X 9 
+m2 <- matrix(1:9, ncol = 9)
+m2
+
+# 9X1 %*% 1X9 = 9X9
+m1 %*% m2
+```
+
+
