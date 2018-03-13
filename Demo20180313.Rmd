@@ -1,0 +1,80 @@
+---
+title: "Demo20180313"
+author: "David Chiu"
+date: "2018年3月13日"
+output: html_document
+---
+
+## save & load
+```{r}
+
+#save.image("C:/Users/nc20/Desktop/0313.RData")
+# get working directory
+getwd()
+
+# set working directory
+setwd('C:/Users/nc20/Desktop/')
+
+# save all variables into RData file
+save.image("0313_2.RData")
+
+# load variables from RData file
+load("0313_2.RData")
+
+
+```
+
+## Save Model
+```{r}
+data(anscombe)
+fit <- lm(y1 ~ x1, data = anscombe)
+fit
+plot(y1 ~ x1, data = anscombe)
+abline(fit, col="red")
+predict(fit, data.frame(x1 = 16))
+
+save(fit, file = 'model.RData')
+load('model.RData')
+
+predict(fit, data.frame(x1 = 18))
+
+```
+
+## Homework1
+```{r}
+# use <- to assign variable
+height <- 180
+height <- c(180)
+
+x <- c(1,2,3, 'hello')
+# use class to examine data type
+class(x)
+
+# use c() to create vectors
+names_vec  <- c('Brian', 'Toby', "Sherry")
+height_vec <- c(180, 169, 173)
+weight_vec <- c( 73,  87,  43)
+
+# calculate bmi with a math formula
+bmi_vec <- weight_vec / (height_vec / 100) ^ 2
+
+# assign names to vector with names infix function
+names(bmi_vec) <- names_vec
+
+# filter vector with given condition
+bmi_vec[bmi_vec < 18.5]
+bmi_vec[bmi_vec >= 24]
+
+# filter vector with & or | condition
+result <- bmi_vec[(bmi_vec < 18.5) | (bmi_vec >= 24)]
+names(result)
+
+
+! ( (bmi_vec >= 18.5) & (bmi_vec < 24) )
+
+bmi_vec[! ( (bmi_vec >= 18.5) & (bmi_vec < 24) )]
+
+# use which to get filtering condition position
+bmi_vec[which(! ( (bmi_vec >= 18.5) & (bmi_vec < 24) ))]
+```
+
