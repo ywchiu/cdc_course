@@ -103,6 +103,148 @@ NHI_EnteroviralInfection$腸病毒健保就診ratio <- NHI_EnteroviralInfection$
 
 new_taipei <- NHI_EnteroviralInfection[ NHI_EnteroviralInfection$縣市 == '新北市', ]
 new_taipei[order(new_taipei$腸病毒健保就診ratio, decreasing=TRUE), ]
+
+dataset <- new_taipei[new_taipei$年齡別 == '3-4' & new_taipei$就診類別 == '住院', c('年','週', '腸病毒健保就診人次') ]
+
+hist(dataset$腸病毒健保就診人次)
+boxplot(dataset$腸病毒健保就診人次)
+plot(dataset$腸病毒健保就診人次, type = 'line', main='腸病毒分析結果', col="red")
+
+stat <- tapply(NHI_EnteroviralInfection$腸病毒健保就診人次,NHI_EnteroviralInfection$縣市, sum)
+
+stat2 <- sort(stat, decreasing = TRUE)
+barplot(stat2)
+pie(stat2, init.angle = 90, clockwise = TRUE)
+
 ```
 
+## List
+```{r}
+phone <-list(thing="iphoneX" , height=5.65, width=2.79 )
+phone
+phone$thing
+phone$height
+
+
+student <- list(name = 'Toby',score =c(87,57,72))
+student$score
+
+student$score[1]
+min(student$score)
+
+student[[1]]
+
+li <- list(c(70,65,90), c(56,75,66,63))
+
+li[[1]]
+li[[2]]
+
+mean(li[[1]])
+mean(li[[2]])
+
+
+?lapply
+lapply(li, mean)
+
+
+sum(li[[1]])
+sum(li[[2]])
+lapply(li, sum)
+
+
+a <- 180
+b <- 250
+a
+b
+print(a)
+print(b)
+
+
+x <- 5
+
+if(x > 3){
+  print("x > 3")
+}else{
+  print("x<=3")
+}
+
+
+x <- 2
+if(x > 3){
+  print("x > 3")
+} else if( x==3 ){
+  print("x == 3")
+} else{
+  print("x<=3")
+}
+
+
+1:10
+
+for (qoo in 1:10){
+  print(qoo)
+}
+
+# using for loop: not recommend  
+s <- 0
+for (qoo in 1:100){
+  s <- s + qoo
+}
+s
+
+# using built-in function: recommended method
+sum(1:100)
+
+# using for loop: not recommend  
+for (qoo in 1:10){
+  print(qoo ^ (1/2))
+}
+
+# using vectorize programming: recommended method
+(1:10) ^ (1/2)
+
+
+
+x <-c("sunny","rainy", "cloudy", "rainy", "cloudy")
+
+length(x)
+x[1]
+
+for( i in 1:length(x)){
+  print(x[i])
+}
+
+seq_along(x)
+
+for(i in seq_along(x)){
+  print(x[i])
+}
+
+for(letter in x){
+  print(letter)
+}
+
+
+s   <- 0 
+cnt <- 0
+
+while (cnt <= 100){
+  s   <- s + cnt 
+  cnt <- cnt + 1
+}
+s
+cnt
+
+sum(1:100)
+
+
+## while loop: becareful infinity loop
+
+#cnt <- 0
+#while (cnt <= 100){
+#  s   <- s + cnt 
+#  #cnt <- cnt + 1
+#}
+
+```
 
