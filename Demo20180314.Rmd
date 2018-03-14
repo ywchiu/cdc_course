@@ -246,5 +246,138 @@ sum(1:100)
 #  #cnt <- cnt + 1
 #}
 
+
+url<-'https://tw.appledaily.com/new/realtime/'
+?paste
+paste(url, 1)
+paste(url, 1, sep = '' )
+paste0(url, 1)
+
+for (i in 1:10){
+  print(paste0(url,i))
+}
+
+lapply(1:10, function(i) paste0(url, i))
+
+f <- function(){
+}
+
+addNum <- function(a,b){
+  a + b
+}
+
+addNum(3,5)
+
+multiplyNum <- function(a,b){
+  a + b
+  a * b
+}
+
+multiplyNum(3,5)
+
+
+multiplyNum2 <- function(a,b){
+  a + b
+  return(a * b)
+}
+
+multiplyNum2(3,5)
+
+
+addNum <- function(a,b = 2){
+  a + b
+}
+
+addNum(3)
+addNum(5)
+
+addNum <- function(a = 3,b = 2){
+  a * 8 + b * 2
+}
+
+addNum()
+addNum(2,3)
+addNum(b=2,a=3)
+
+
+addNum <- function(a = 3,b = 2, pineapplepen = 7){
+  a * 8 + b * 2 + pineapplepen
+}
+
+addNum(3,5,2)
+
+addNum(a = 3,b = 5,pin = 2)
+
+addNum <- function(a = 2, b = 3){
+  s <- a+b
+  s
+}
+
+addNum(3,5)
+addNum()
+
+
+f <- function(a,b){
+  a * 2
+}
+
+f(3)
+
+f <- function(a,b){
+  return(a + b)
+}
+#f(3)
+
+f <- function(a,b = 3){
+  return(a+b)
+}
+f(3)
+
+
+?file
+f <- file('https://raw.githubusercontent.com/ywchiu/cdc_course/master/data/disease.txt')
+article <- readLines(f)
+#article
+close(f)
+
+# split a string by given delimiter
+?strsplit
+a <- 'this is a book'
+strsplit(a, ' ')
+
+#using unlist to convert list to vec
+?unlist
+b <- list(c(1,2), c(2,3))
+b
+unlist(b)
+
+# count occurence of an element of a vector
+?table
+a <- c(1,2,1,2,3,3,2)
+table(a)
+
+wordcount <- function(article){
+  article.split <- strsplit(article, ' ')
+  article.vec   <- unlist(article.split)
+  tb <- table(article.vec)
+  sort(tb, decreasing = TRUE)
+}
+
+stopwords <- c("a", "about", "above", "above", "across", "after", "afterwards", "again", "against", "all", "almost", "alone", "along", "already", "also","although","always","am","among", "amongst", "amoungst", "amount",  "an", "and", "another", "any","anyhow","anyone","anything","anyway", "anywhere", "are", "around", "as",  "at", "back","be","became", "because","become","becomes", "becoming", "been", "before", "beforehand", "behind", "being", "below", "beside", "besides", "between", "beyond", "bill", "both", "bottom","but", "by", "call", "can", "cannot", "cant", "co", "con", "could", "couldnt", "cry", "de", "describe", "detail", "do", "done", "down", "due", "during", "each", "eg", "eight", "either", "eleven","else", "elsewhere", "empty", "enough", "etc", "even", "ever", "every", "everyone", "everything", "everywhere", "except", "few", "fifteen", "fify", "fill", "find", "fire", "first", "five", "for", "former", "formerly", "forty", "found", "four", "from", "front", "full", "further", "get", "give", "go", "had", "has", "hasnt", "have", "he", "hence", "her", "here", "hereafter", "hereby", "herein", "hereupon", "hers", "herself", "him", "himself", "his", "how", "however", "hundred", "ie", "if", "in", "inc", "indeed", "interest", "into", "is", "it", "its", "itself", "keep", "last", "latter", "latterly", "least", "less", "ltd", "made", "many", "may", "me", "meanwhile", "might", "mill", "mine", "more", "moreover", "most", "mostly", "move", "much", "must", "my", "myself", "name", "namely", "neither", "never", "nevertheless", "next", "nine", "no", "nobody", "none", "noone", "nor", "not", "nothing", "now", "nowhere", "of", "off", "often", "on", "once", "one", "only", "onto", "or", "other", "others", "otherwise", "our", "ours", "ourselves", "out", "over", "own","part", "per", "perhaps", "please", "put", "rather", "re", "same", "see", "seem", "seemed", "seeming", "seems", "serious", "several", "she", "should", "show", "side", "since", "sincere", "six", "sixty", "so", "some", "somehow", "someone", "something", "sometime", "sometimes", "somewhere", "still", "such", "system", "take", "ten", "than", "that", "the", "their", "them", "themselves", "then", "thence", "there", "thereafter", "thereby", "therefore", "therein", "thereupon", "these", "they", "thickv", "thin", "third", "this", "those", "though", "three", "through", "throughout", "thru", "thus", "to", "together", "too", "top", "toward", "towards", "twelve", "twenty", "two", "un", "under", "until", "up", "upon", "us", "very", "via", "was", "we", "well", "were", "what", "whatever", "when", "whence", "whenever", "where", "whereafter", "whereas", "whereby", "wherein", "whereupon", "wherever", "whether", "which", "while", "whither", "who", "whoever", "whole", "whom", "whose", "why", "will", "with", "within", "without", "would", "yet", "you", "your", "yours", "yourself", "yourselves", "the","-")
+
+wordcount <- function(article){
+  article.split <- strsplit(article, ' ')
+  article.vec   <- unlist(article.split)
+  tb <- table(article.vec[! article.vec %in% stopwords])
+  
+  sort(tb, decreasing = TRUE)
+}
+
+wordcount(article)
+# install.packages('wordcloud2')
+library(wordcloud2)
+wordcloud2(wordcount(article))
+
+
 ```
 
