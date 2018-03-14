@@ -1,0 +1,108 @@
+---
+title: "Demo20180314"
+author: "David Chiu"
+date: "2018年3月14日"
+output: html_document
+---
+
+## Matrix
+```{r}
+kevin <- c(80, 75)
+toby  <- c(70, 65)
+ian   <- c(90, 85)
+
+grades <- c(kevin, toby, ian)
+
+mat <- matrix(grades, nrow = 3, byrow = TRUE, dimnames = list(c('kevin', 'toby', 'ian'), c('first', 'second')))
+
+mat[,'first'] * 0.4 + mat[,2] *0.6
+```
+
+## Factor
+```{r}
+names_vec <- c('toby', 'ian', 'brian', 'marry')
+
+country_vec <- c('Taiwan', 'China', 'Japan', 'Korea', 'Taiwan', 'Taiwan', 'Japan')
+
+country_factor <- factor(country_vec)
+country_factor
+
+```
+
+## Data Frame
+```{r}
+
+names_vec   <-  c('toby', 'ian', 'brian', 'marry')
+age_vec     <- c(35, 45, 27, 18)
+country_vec <- factor(c('Taiwan', 'Taiwan', 'Japan', 'China'))
+
+country_vec
+mat <- matrix(c(names_vec, age_vec, country_vec), nrow = 4)
+mat
+summary(mat)
+
+
+df <- data.frame(names_vec, age_vec, country_vec)
+df
+summary(df)
+
+df2 <- data.frame(name = names_vec, age = age_vec, country = country_vec)
+df2
+
+str(df2)
+
+df3 <- data.frame(name = names_vec, age = age_vec, country = country_vec, stringsAsFactors = FALSE)
+df3
+
+df3$name
+
+class(df3$name)
+
+df3$name <- as.factor(df3$name)
+df3
+
+
+library(readr)
+NHI_EnteroviralInfection <- read_csv("C:/Users/nc20/Downloads/NHI_EnteroviralInfection.csv")
+#View(NHI_EnteroviralInfection)
+
+head(NHI_EnteroviralInfection)
+tail(NHI_EnteroviralInfection)
+
+class(NHI_EnteroviralInfection)
+summary(NHI_EnteroviralInfection)
+str(NHI_EnteroviralInfection)
+
+
+a <- '123'
+as.integer(a)
+as.numeric(a)
+
+
+NHI_EnteroviralInfection$就診類別 <- as.factor(NHI_EnteroviralInfection$就診類別)
+levels(NHI_EnteroviralInfection$就診類別)
+
+
+NHI_EnteroviralInfection$年齡別 <- as.factor(NHI_EnteroviralInfection$年齡別)
+levels(NHI_EnteroviralInfection$年齡別)
+
+NHI_EnteroviralInfection$縣市 <- as.factor(NHI_EnteroviralInfection$縣市)
+levels(NHI_EnteroviralInfection$縣市)
+
+str(NHI_EnteroviralInfection)
+summary(NHI_EnteroviralInfection)
+
+head(sort(NHI_EnteroviralInfection$健保就診總人次, decreasing=TRUE))
+
+NHI_EnteroviralInfection[order(NHI_EnteroviralInfection$健保就診總人次, decreasing=TRUE), ]
+
+
+NHI_EnteroviralInfection[order(NHI_EnteroviralInfection$腸病毒健保就診人次, decreasing=TRUE), ]
+
+NHI_EnteroviralInfection$腸病毒健保就診ratio <- NHI_EnteroviralInfection$腸病毒健保就診人次 / NHI_EnteroviralInfection$健保就診總人次
+
+new_taipei <- NHI_EnteroviralInfection[ NHI_EnteroviralInfection$縣市 == '新北市', ]
+new_taipei[order(new_taipei$腸病毒健保就診ratio, decreasing=TRUE), ]
+```
+
+
