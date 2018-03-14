@@ -22,3 +22,6 @@
 
 ### Course 2
 - http://rpubs.com/ywchiu/Demo20180313
+
+### Course 3
+- http://rpubs.com/ywchiu/Demo20180314
