@@ -200,6 +200,88 @@ pie(stat3)
 
 ```
 
+## DPLYR
+```{r}
+#install.packages('dplyr')
+library(dplyr)
+
+help(package = 'dplyr')
+
+
+library(readr)
+Dengue <- read_csv("https://raw.githubusercontent.com/ywchiu/cdc_course/master/data/Dengue.csv")
+
+# R Method
+Dengue[Dengue$稰琕瓣產 == 'い地チ瓣'    ,  ]
+
+# DplyR Method
+filter(Dengue, 稰琕瓣產 == 'い地チ瓣')
+
+
+# R Method
+Dengue[Dengue$┦ == '╧' & Dengue$痜ㄒ计 >= 100    ,  ]
+# DPLYR
+filter(Dengue, ┦=='╧' & 痜ㄒ计 >= 100)
+
+
+# R Method
+Dengue[Dengue$┦ == '╧' | Dengue$痜ㄒ计 >= 100    ,  ]
+# DPLYR
+filter(Dengue, ┦=='╧' | 痜ㄒ计 >= 100)
+
+# R Method
+Dengue[Dengue$﹡郡カ %in% c('カ', '玭カ'),  ]
+
+# DPLYR Method
+filter(Dengue, ﹡郡カ %in% c('カ', '玭カ'))
+
+
+# R Method
+Dengue[ , c('﹡郡カ', '痜ㄒ计')]
+
+# DPLYR Method
+select(Dengue, '﹡郡カ', '痜ㄒ计')
+
+
+# R Method
+a <- Dengue[ Dengue$┦ == '╧' & Dengue$痜ㄒ计 >= 100, c('﹡郡カ', '痜ㄒ计')]
+tapply(a$痜ㄒ计, a$﹡郡カ, sum)
+
+# DPLYR Method
+Dengue %>%
+  filter(┦ == '╧' & 痜ㄒ计 >= 100) %>%
+  select('﹡郡カ', '痜ㄒ计')
+
+Dengue %>%
+  filter(┦ == '╧' & 痜ㄒ计 >= 100) %>%
+  select('﹡郡カ', '痜ㄒ计') %>%
+  group_by(﹡郡カ) %>%
+  summarise(s = sum(痜ㄒ计))
+
+# SELECT ﹡郡カ, sum(痜ㄒ计) FROM Dengue WHERE ┦ = '╧' AND 痜ㄒ计 >= 100 GROUP BY ﹡郡カ
+
+
+Dengue %>%
+  filter(痜ㄒ计 >= 100) %>%
+  select('﹡郡カ', '┦','痜ㄒ计') %>%
+  group_by(﹡郡カ, ┦) %>%
+  summarise(s = sum(痜ㄒ计))
+
+# SELECT ﹡郡カ, ┦, sum(痜ㄒ计) FROM Dengue WHERE 痜ㄒ计 >= 100 GROUP BY ﹡郡カ,┦
+
+# R Method
+sum(tail(head(iris), 3)$Sepal.Length)
+
+# Magrittr Method
+iris %>% 
+  head() %>%
+  tail(3) %>%
+  .$Sepal.Length %>%
+  sum()
+
+
+
+```
 
 
 
