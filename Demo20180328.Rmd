@@ -148,4 +148,126 @@ Dengue %>%
   arrange(desc(痜ㄒ计)) %>%
   select('祇痜') %>%
   head(1)
+
 ```
+
+## Dplyr:mutate
+```{r}
+frequsum <- Dengue %>% 
+  select('痜ㄒ计') %>%
+  sum()
+
+
+# method 1
+#Dengue$portion <- Dengue$痜ㄒ计 / frequsum
+
+# method 2
+Dengue %>%
+  select('痜ㄒ计') %>%
+  mutate(portion = 痜ㄒ计 / frequsum) %>%
+  head()
+
+Dengue <- Dengue %>% mutate(portion = 痜ㄒ计 / frequsum) 
+
+```
+
+## group by & summarize
+```{r}
+Dengue %>%
+  group_by(┦) %>%
+  summarise(instance_num = sum(痜ㄒ计, na.rm=TRUE))
+
+
+a <- c(80,70,50, NA)
+sum(a)
+?sum
+
+sum(a, na.rm = TRUE)
+
+
+
+Dengue %>%
+  group_by(﹡郡カ) %>%
+  summarise(instance_num = sum(痜ㄒ计, na.rm=TRUE)) %>%
+  head()
+
+Dengue %>%
+  group_by(稰琕瓣產) %>%
+  summarise(instance_num = sum(痜ㄒ计, na.rm=TRUE)) %>%
+  head()
+
+
+Dengue %>%
+  group_by(祇痜,稰琕瓣產, ﹡郡カ) %>%
+  summarise(instance_num = sum(痜ㄒ计, na.rm=TRUE)) %>%
+  head()
+
+```
+
+## Dplyr Arrange
+```{r}
+Dengue %>%
+  group_by(﹡郡カ) %>%
+  summarise(instance_num = sum(痜ㄒ计, na.rm=TRUE)) %>%
+  arrange(instance_num)
+
+
+Dengue %>%
+  group_by(﹡郡カ) %>%
+  summarise(instance_num = sum(痜ㄒ计, na.rm=TRUE)) %>%
+  arrange(desc(instance_num))
+
+
+Dengue %>%
+  group_by(祇痜,稰琕瓣產, ﹡郡カ) %>%
+  summarise(instance_num = sum(痜ㄒ计, na.rm=TRUE)) %>%
+  arrange(desc(祇痜, 稰琕瓣產))
+
+
+```
+
+## Dplyr: summarize_each
+```{r}
+Dengue %>%
+  group_by(﹡郡カ) %>%
+  summarise_each(funs(min,max,mean),  '痜ㄒ计')
+
+# SELECT ﹡郡カ, min(痜ㄒ计), min(portion), max(痜ㄒ计), max(portion), avg(痜ㄒ计), avg(portion) FROM Dengue GROUP BY ﹡郡カ
+Dengue %>%
+  group_by(﹡郡カ) %>%
+  summarise_each(funs(min(., na.rm=TRUE),max(., na.rm=TRUE),mean(., na.rm=TRUE)),  c('痜ㄒ计','portion'))
+```
+
+## Dplyr:join
+```{r}
+?dplyr::join
+
+county_stat <- Dengue %>%
+  group_by(﹡郡カ) %>%
+  summarise(instance_sum = sum(痜ㄒ计))
+
+# method 1
+inner_join(Dengue, county_stat, by="﹡郡カ") %>%
+  head()
+
+# method 2
+Dengue %>%
+  inner_join(county_stat, by="﹡郡カ") %>%
+  head()
+
+?merge
+# method 3 : data frame method
+merge(Dengue, county_stat, by = '﹡郡カ')
+
+
+a <- data.frame(a=c(1,2,3), b=c(0,0,0))
+b <- data.frame(a=c(4,5,6), b=c(1,1,1))
+df1 <- rbind(a, b)
+df1
+
+df2 <- cbind(a, b)
+df2
+
+```
+
+
