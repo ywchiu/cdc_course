@@ -267,6 +267,49 @@ df1
 
 df2 <- cbind(a, b)
 df2
+```
+
+## reshape2
+```{r}
+#install.packages('reshape2')
+library(reshape2)
+help(package = 'reshape2')
+?dcast      
+
+data("airquality")      
+airquality
+
+names(airquality) <- tolower(names(airquality))
+
+aqm <- melt(airquality, id=c("month", "day"), na.rm=TRUE)
+aqm
+
+dcast(aqm, month ~ variable, mean, margins = c("month", "variable"))
+
+county_stat <- Dengue %>%
+  group_by(發病年, 居住縣市) %>%
+  summarise_each(funs(sum(., na.rm=TRUE)), '病例數')
+
+sex_stat <- Dengue %>%
+  group_by(發病年, 性別) %>%
+  summarise_each(funs(sum(., na.rm=TRUE)), '病例數')
+
+country_stat <- Dengue %>%
+  group_by(發病年, 感染國家) %>%
+  summarise_each(funs(sum(., na.rm=TRUE)), '病例數')
+
+names(county_stat) <- c('year', 'variable', 'cnt')
+names(sex_stat) <- c('year', 'variable', 'cnt')
+names(country_stat) <- c('year', 'variable', 'cnt')
+
+country_stat <-as.data.frame(country_stat)
+sex_stat     <-as.data.frame(sex_stat)
+county_stat  <-as.data.frame(county_stat)
+
+df <- rbind(county_stat, sex_stat, country_stat)
+
+
+dcast(df,  variable ~ year, function(e) sum(e,na.rm=TRUE), margins = c("year", "variable"))
 
 ```
 
