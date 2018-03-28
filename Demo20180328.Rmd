@@ -1,0 +1,151 @@
+---
+title: "Demo20180328"
+author: "David Chiu"
+date: "2018年3月28日"
+output: html_document
+---
+
+## 作業二
+
+```{r}
+library(readr)
+
+# method 1 : from web
+Dengue <- read_csv("https://raw.githubusercontent.com/ywchiu/cdc_course/master/data/Dengue.csv")
+
+
+# method 2 : from local
+getwd()
+Dengue <- read_csv('C:/Users/nc19/Downloads/Dengue.csv')
+
+# Examine Data
+class(Dengue)
+str(Dengue)
+summary(Dengue)
+
+
+Dengue$居住縣市 <- as.factor(Dengue$居住縣市)
+Dengue$性別 <- as.factor(Dengue$性別)
+Dengue$是否境外移入 <- as.factor(Dengue$是否境外移入)
+Dengue$感染國家 <- as.factor(Dengue$感染國家)
+
+summary(Dengue)
+
+head(Dengue)
+
+
+#1. 請回答該資料集有多少筆資料?
+#dim(Dengue)
+nrow(Dengue)
+
+#2. 資料集有包含哪些感染國家? 並回答國家個數?
+
+# method 1
+Dengue$感染國家 <- as.factor(Dengue$感染國家)
+levels(Dengue$感染國家)
+length(levels(Dengue$感染國家)) - 1
+
+# method 2
+country_cate <- levels(Dengue$感染國家)
+country_cate[country_cate != 'None']
+length(country_cate[country_cate != 'None'])
+
+# method 3
+country_cate[! country_cate %in% c('None')]
+length(country_cate[! country_cate %in% c('None')])
+
+
+#3. 請計算在2011年中，有多少個確定病例數
+sum(Dengue[Dengue$發病年 == 2011, '病例數' ])
+
+#4. 請計算感染國為中華民國的確定病例數有多少件?
+sum(Dengue[Dengue$感染國家 == '中華民國', '病例數' ])
+
+#5. 請找出2014年居住於台北市的女性確診病例有多少件
+sum(Dengue[Dengue$發病年 == 2014 & Dengue$居住縣市 == '台北市' & Dengue$性別 == '女', '病例數' ])
+
+#6. 請找出中華民國在2014年時，哪個縣市有最多男性確定病例?
+stat <- Dengue[Dengue$發病年 == 2014 & Dengue$感染國家 == '中華民國' & Dengue$性別 == '男', c('居住縣市','病例數') ]
+
+stat[order(stat$病例數, decreasing=TRUE), ][1,'居住縣市']
+
+#7. 繼第6題，請問有多少確定病例數?
+stat[order(stat$病例數, decreasing=TRUE), ][1,'病例數']
+
+#8. 請回答台南市在哪一年有最多男性確定病例?
+stat <- Dengue[Dengue$居住縣市 == '台南市' & Dengue$性別 == '男', c('發病年','病例數') ]
+
+stat[order(stat$病例數, decreasing=TRUE), ][1,]
+
+head(stat[order(stat$病例數, decreasing=TRUE), ], 1)
+
+
+
+# Stat by country
+grades <- c(70,82,50,60,80,90)
+group  <- c(1,1,2,2,1,1)
+tapply(grades, group, mean)
+
+tapply(Dengue$病例數, Dengue$感染國家, sum)
+
+
+# Stat by country & year
+# SELECT country, year, sum(病例數) FROM Dengue GROUP BY country, year 
+
+# install.packages('dplyr')
+library(dplyr)
+Dengue %>%
+  group_by(感染國家) %>%
+  summarize(stat_sum = sum(病例數))
+
+Dengue %>%
+  group_by(發病年,感染國家) %>%
+  summarize(stat_sum = sum(病例數))
+
+
+#3. 請計算在2011年中，有多少個確定病例數
+# sum(Dengue[Dengue$發病年 == 2011, '病例數' ])
+Dengue %>%
+  filter(發病年 == 2011) %>%
+  select('病例數') %>%
+  sum()
+
+#4. 請計算感染國為中華民國的確定病例數有多少件?
+#sum(Dengue[Dengue$感染國家 == '中華民國', '病例數' ])
+Dengue %>%
+  filter(感染國家 == '中華民國') %>%
+  select('病例數') %>%
+  sum()
+
+#5. 請找出2014年居住於台北市的女性確診病例有多少件
+#sum(Dengue[Dengue$發病年 == 2014 & Dengue$居住縣市 == '台北市' & Dengue$性別 == '女', '病例數' ])
+Dengue %>%
+  filter(感染國家 == '中華民國' & 發病年 == 2014 & 居住縣市 == '台北市' & 性別 == '女') %>%
+  select('病例數') %>%
+  sum()
+
+#6. 請找出中華民國在2014年時，哪個縣市有最多男性確定病例?
+#stat <- Dengue[Dengue$發病年 == 2014 & Dengue$感染國家 == '中華民國' & Dengue$性別 == '男', c('居住縣市','病例數') ]
+#stat[order(stat$病例數, decreasing=TRUE), ][1,'居住縣市']
+Dengue %>%
+  filter(感染國家 == '中華民國' & 發病年 == 2014 & 性別 == '男') %>%
+  arrange(desc(病例數)) %>%
+  select('居住縣市') %>%
+  head(1)
+
+
+#7. 繼第6題，請問有多少確定病例數?
+#stat[order(stat$病例數, decreasing=TRUE), ][1,'病例數']
+Dengue %>%
+  filter(感染國家 == '中華民國' & 發病年 == 2014 & 性別 == '男') %>%
+  arrange(desc(病例數)) %>%
+  select('病例數') %>%
+  head(1)
+
+#8. 請回答台南市在哪一年有最多男性確定病例?
+Dengue %>%
+  filter(居住縣市 == '台南市' & 性別 == '男') %>%
+  arrange(desc(病例數)) %>%
+  select('發病年') %>%
+  head(1)
+```
