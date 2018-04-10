@@ -1,0 +1,131 @@
+---
+title: "Demo20180410"
+author: "David Chiu"
+date: "2018年4月10日"
+output: html_document
+---
+
+## HW3
+```{r}
+library(readr)
+tb <- read_csv("https://raw.githubusercontent.com/ywchiu/cdc_course/master/data/tb.csv")
+#View(tb)
+
+head(tb)
+
+class(tb)
+str(tb)
+summary(tb)
+
+tb$確定病名 <- as.factor(tb$確定病名)
+tb$縣市 <- as.factor(tb$縣市)
+tb$鄉鎮 <- as.factor(tb$鄉鎮)
+tb$性別 <- as.factor(tb$性別)
+tb$國籍 <- as.factor(tb$國籍)
+tb$年齡層 <- as.factor(tb$年齡層)
+
+## 1. 請回答該資料集有多少筆資料?
+# method 1
+nrow(tb)
+
+# method 2
+dim(tb)
+
+# method 3
+library(dplyr)
+tb %>% summarise(cnt = n())
+
+
+# 2. 請計算在哪一年月(建檔年月)，本國籍病患有最多病例數?
+library(dplyr)
+#str(tb)
+
+# SELECT 建檔年份, 建檔月份, sum(確定病例數) FROM tb 
+# WHERE 國籍 = '本國籍'  GROUP BY 建檔年份, 建檔月份 
+# ORDER BY sum(確定病例數) DESC LIMIT 1 
+tb %>% 
+  filter(國籍 == '本國籍') %>%
+  group_by(建檔年份, 建檔月份) %>% 
+  summarise(sum_of_instances = sum(確定病例數)) %>%
+  arrange(desc(sum_of_instances)) %>%
+  head(1)
+
+# 繼第3題，請問在有最多病例數的該年月，本國籍病患所處縣市前三名為?
+# SELECT 縣市, sum(確定病例數) FROM tb WHERE 建檔年份 = 2006 & 建檔月份 = 5 & 國籍 = '本國籍' GROUP BY 縣市 ORDER BY sum(確定病例數) DESC LIMIT 3
+
+tb %>%
+  filter(建檔年份 == 2006 & 建檔月份 == 5 & 國籍 == '本國籍') %>%
+  group_by(縣市) %>%
+  summarise(sum_of_instances = sum(確定病例數)) %>% 
+  arrange(desc(sum_of_instances)) %>%
+  head(3) %>%
+  select('縣市')
+
+# 4. 請找出本國籍病患在哪一個性別及年齡層病例數最多?
+# SELECT 性別, 年齡層, SUM(確定病例數) FROM tb WHERE 國籍 = '本國籍'
+# GROUP BY 性別, 年齡層 ORDER BY SUM(確定病例數) DESC LIMIT 1 
+tb %>%
+  filter(國籍 == '本國籍') %>%
+  select('性別', '年齡層', '確定病例數') %>%
+  group_by(性別, 年齡層) %>%
+  summarise(sum_of_instances = sum(確定病例數)) %>%
+  arrange(desc(sum_of_instances)) %>%
+  head(1)
+
+# 5. 請統計病例來源地(國籍/縣市/鄉鎮)一共有多少種不重複組合?
+# SELECT DISTINCT(國籍, 縣市, 鄉鎮) FROM tb;
+tb %>%
+  select('國籍', '縣市', '鄉鎮') %>%
+  summarise(n_distinct(國籍, 縣市, 鄉鎮))
+
+# 6. 請合併tb表跟people表，並找出感染結核病比例最高的前三縣市?
+people <- read_csv('https://raw.githubusercontent.com/ywchiu/cdc_course/master/data/people.csv')
+View(people)
+
+sub('台', '臺', '台北市')
+
+stat <- tb %>%
+  group_by(縣市) %>%
+  summarize(sum_of_instances = sum(確定病例數)) %>%
+  mutate(區域別 = sub('台', '臺', 縣市))
+
+?join
+
+a <- data.frame(c1=c('A','B','C'), c2 = c(1,2,3))
+a
+
+b <- data.frame(c1=c('B','C','D'), c2 = c(2,3,4))
+b
+
+inner_join(a, b, by='c1')
+left_join(a, b, by='c1')
+right_join(a, b, by='c1')
+full_join(a, b, by='c1')
+
+# method 1
+head(stat)
+#str(people)
+#inner_join(stat, people, by=c('縣市' = '區域別'))
+m <- inner_join(stat, people, by='區域別')
+
+
+
+# method 2
+#names(people) <- c('縣市', '總計')
+#m <- inner_join(stat, people, by='縣市')
+
+head(m)
+
+# method 1
+m$ratio <- m$sum_of_instances / m$總計
+m %>% arrange(desc(ratio)) %>% head(3) %>% select('區域別')
+
+# method 2
+m %>% 
+  mutate(ratio = sum_of_instances / 總計) %>%
+  arrange(desc(ratio)) %>%
+  head(3) %>%
+  select('區域別')
+
+```
+
