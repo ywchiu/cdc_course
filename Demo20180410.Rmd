@@ -128,4 +128,74 @@ m %>%
   select('°Ï°ì§O')
 
 ```
+## Line Chart
+```{r}
+x <- seq(1,6)
+y <- x
+y
+plot(x,y, type='b')
+
+types <- c('p', 'l', 'o', 'b', 'c', 's', 'h', 'n')
+
+# generate graph with 2 rows and 4 columns
+# method 1
+par(mfrow=c(2,4))
+for (i in 1:length(types)){
+  #print(types[i])
+  plot(x,y,types[i], main = paste('type:', types[i]))
+}
+
+par(mfrow=c(1,1))
+plot(x,y, type= 'n')
+lines(x,y, type= 'l', col='red')
+lines(x,y, type= 'p', col='blue')
+
+# method 2
+par(mfrow=c(4,2))
+for (i in 1:length(types)){
+  #print(types[i])
+  plot(x,y,type = 'n', main = paste('type:', types[i]))
+  lines(x,y, type=types[i])
+}
+par(mfrow=c(1,1))
+plot(x,y, type= 'l', col='red', lty=3, lwd= 5)
+
+plot(x,y, type= 'b', col='red', lty=3, lwd= 5, pch=17)
+?plot
+
+
+Taipei <- c(92.5,132.6,168.8,159.1,218.7)
+Tainan <- c(21.2, 30.6, 37.3, 84.6, 184.3)
+
+plot(Taipei, type= 'o', ylim=c(0,220), col='blue', xlab='Month', ylab = 'Rainfall', main = 'Taipei Rainfall v.s. Tainan Rainfall')
+lines(Tainan, type= 'o',col='red',pch=22, lty=2)
+
+
+plot(Taipei, type= 'o', ylim=c(0,260), xlim=c(1,6), col='blue', xlab='Month', ylab = 'Rainfall', main = 'Taipei Rainfall v.s. Tainan Rainfall')
+lines(Tainan, type= 'o',col='red',pch=22, lty=2)
+text(5.5, 230, 'Taipei', col='blue')
+text(5.5, 200, 'Tainan', col='red')
+```
+
+## Bar Chart
+```{r}
+housePrice <- read.csv('https://raw.githubusercontent.com/ywchiu/rtibame/master/data/house-prices.csv', header = TRUE)
+bedroomTable <- table(housePrice$Bedrooms)
+barplot(bedroomTable, main = 'Bedroom Type Count', xlab = 'Bedroom Type', ylab= 'count', col='blue')
+
+# https://color.adobe.com/zh/
+barplot(bedroomTable, main = 'Bedroom Type Count', xlab = 'Bedroom Type', ylab= 'count', col=c('#FFE180', '#FFBE6c', '#E8834B', '#C03F49'))
+
+grades <- c(80,82,84,88)
+barplot(grades)
+barplot(grades - 70)
+```
+
+
+
+
+
+
+
+
 
