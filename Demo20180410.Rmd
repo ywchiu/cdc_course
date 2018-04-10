@@ -192,7 +192,45 @@ barplot(grades - 70)
 ```
 
 
+## Histogram
+```{r}
+par(mfrow=c(1,1))
+load("C:/Users/nc20/Downloads/cdc.Rdata")
+head(cdc)
+hist(cdc$weight, breaks = 50)
+hist(cdc$weight, breaks = 300)
 
+sort(table(cdc$weight), decreasing = TRUE)
+
+table(cdc$weight %% 10)
+
+par(mfrow=c(2,1))
+hist(cdc$weight, breaks = 50)
+barplot(table(cdc$weight))
+
+
+par(mfrow=c(2,1))
+hist(cdc$weight, breaks = 20000, xlim=c(70,380))
+barplot(table(cdc$weight), xlim=c(0,300))
+
+```
+
+## Pie Chart
+```{r}
+housePrice <- read.csv('https://raw.githubusercontent.com/ywchiu/rtibame/master/data/house-prices.csv', header = TRUE)
+bedroomTable <- table(housePrice$Bedrooms)
+barplot(bedroomTable)
+Labels<-c("2 unit", "3 unit", "4 unit", "5 unit")
+pie(bedroomTable, labels = Labels, col=c('#FFE180', '#FFBE6c', '#E8834B', '#C03F49'))
+rainbow(4)
+
+pie(bedroomTable, labels = Labels, col=rainbow(4),main = 'Bedroom Pie Chart')
+
+
+tb <- sort(bedroomTable, decreasing = TRUE)
+pie(tb, labels = c('3 Units', '2 Units', '4 Units', '5 Units'), init.angle = 90, clockwise = TRUE, col=rainbow(4),main = 'Bedroom Pie Chart')
+
+```
 
 
 
