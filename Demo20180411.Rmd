@@ -1,0 +1,100 @@
+---
+title: "Demo20180411"
+author: "David Chiu"
+date: "2018¦~4¤ë11¤é"
+output: html_document
+---
+
+## Scatter Plot
+```{r}
+load("C:/Users/nc20/Downloads/cdc.Rdata")
+plot(cdc$weight, cdc$wtdesire)
+
+# y = ax + b
+# wtdesire = a* weight + b
+plot(wtdesire ~ weight, data = cdc)
+
+?lm
+fit <- lm(wtdesire ~ weight, data = cdc)
+
+# wtdesire = 0.639 * weight + 46.664
+fit
+
+
+plot(wtdesire ~ weight, data = cdc)
+abline(v = 450, col='blue')
+abline(h = 400, col='orange')
+abline(fit    , col='red')
+
+
+data(iris)
+head(iris)
+
+x <- iris[,1]
+y <- iris[,3]
+s <- iris[,5]
+s
+
+xlab <- names(iris)[1]
+ylab <- names(iris)[3]
+#plot(x,y, xlab = xlab, ylab = ylab, col='red')
+plot(x,y, xlab = xlab, ylab = ylab, col=s)
+color_lab <- ifelse(iris[,3] > median(iris[,3]), 'red', 'blue')
+cex_lab   <- ifelse(iris[,3] > median(iris[,3]), 3, 1)
+#cex_lab
+plot(x,y, xlab = xlab, ylab = ylab, col=color_lab, cex = cex_lab, pch=19)
+
+
+
+x <- iris[,1]
+y <- iris[,3]
+
+xlab <- names(iris)[1]
+ylab <- names(iris)[3]
+
+
+setosa     <- iris$Species == 'setosa'
+versicolor <- iris$Species == 'versicolor'
+setosa     <- which(iris$Species == 'setosa')
+versicolor <- which(iris$Species == 'versicolor')
+
+plot(x,y, xlab=xlab, ylab=ylab, type= 'n')
+points(iris[setosa,1], iris[setosa,3], col= 'green')
+points(iris[versicolor,1], iris[versicolor,3], col= 'red')
+
+
+data('anscombe')
+fit <- lm(y3 ~ x1, data = anscombe)
+plot(y3 ~ x1, data = anscombe)
+abline(fit, col='red')
+
+fit <- lm(y3[x1!=13] ~ x1[x1!=13], data = anscombe)
+plot(y3 ~ x1, data = anscombe)
+abline(fit, col='red')
+
+library(MASS)
+fit <- rlm(y3 ~ x1, data = anscombe)
+plot(y3 ~ x1, data = anscombe)
+abline(fit, col='red')
+
+
+head(cdc)
+plot(wtdesire ~ weight, data = cdc)
+fit <- lm(wtdesire ~ weight, data = cdc)
+abline(fit, col='red')
+
+
+plot(wtdesire ~ weight, data = cdc, col= gender)
+
+male   <- cdc$gender == 'm'
+female <- cdc$gender == 'f'
+
+fit_male   <- lm(wtdesire ~ weight, data = cdc[male,])
+fit_female <- lm(wtdesire ~ weight, data = cdc[female,])
+plot(wtdesire ~ weight, data = cdc, type='n')
+points(wtdesire ~ weight, data = cdc[male,], col='blue')
+abline(fit_male, col='orange', lwd=3)
+points(wtdesire ~ weight, data = cdc[female,], col='red')
+abline(fit_female, col='purple', lwd=3)
+
+```
