@@ -1,0 +1,383 @@
+---
+title: "Demo20180314"
+author: "David Chiu"
+date: "2018年3月14日"
+output: html_document
+---
+
+## Matrix
+```{r}
+kevin <- c(80, 75)
+toby  <- c(70, 65)
+ian   <- c(90, 85)
+
+grades <- c(kevin, toby, ian)
+
+mat <- matrix(grades, nrow = 3, byrow = TRUE, dimnames = list(c('kevin', 'toby', 'ian'), c('first', 'second')))
+
+mat[,'first'] * 0.4 + mat[,2] *0.6
+```
+
+## Factor
+```{r}
+names_vec <- c('toby', 'ian', 'brian', 'marry')
+
+country_vec <- c('Taiwan', 'China', 'Japan', 'Korea', 'Taiwan', 'Taiwan', 'Japan')
+
+country_factor <- factor(country_vec)
+country_factor
+
+```
+
+## Data Frame
+```{r}
+
+names_vec   <-  c('toby', 'ian', 'brian', 'marry')
+age_vec     <- c(35, 45, 27, 18)
+country_vec <- factor(c('Taiwan', 'Taiwan', 'Japan', 'China'))
+
+country_vec
+mat <- matrix(c(names_vec, age_vec, country_vec), nrow = 4)
+mat
+summary(mat)
+
+
+df <- data.frame(names_vec, age_vec, country_vec)
+df
+summary(df)
+
+df2 <- data.frame(name = names_vec, age = age_vec, country = country_vec)
+df2
+
+str(df2)
+
+df3 <- data.frame(name = names_vec, age = age_vec, country = country_vec, stringsAsFactors = FALSE)
+df3
+
+df3$name
+
+class(df3$name)
+
+df3$name <- as.factor(df3$name)
+df3
+
+
+library(readr)
+NHI_EnteroviralInfection <- read_csv("C:/Users/nc20/Downloads/NHI_EnteroviralInfection.csv")
+#View(NHI_EnteroviralInfection)
+
+head(NHI_EnteroviralInfection)
+tail(NHI_EnteroviralInfection)
+
+class(NHI_EnteroviralInfection)
+summary(NHI_EnteroviralInfection)
+str(NHI_EnteroviralInfection)
+
+
+a <- '123'
+as.integer(a)
+as.numeric(a)
+
+
+NHI_EnteroviralInfection$就診類別 <- as.factor(NHI_EnteroviralInfection$就診類別)
+levels(NHI_EnteroviralInfection$就診類別)
+
+
+NHI_EnteroviralInfection$年齡別 <- as.factor(NHI_EnteroviralInfection$年齡別)
+levels(NHI_EnteroviralInfection$年齡別)
+
+NHI_EnteroviralInfection$縣市 <- as.factor(NHI_EnteroviralInfection$縣市)
+levels(NHI_EnteroviralInfection$縣市)
+
+str(NHI_EnteroviralInfection)
+summary(NHI_EnteroviralInfection)
+
+head(sort(NHI_EnteroviralInfection$健保就診總人次, decreasing=TRUE))
+
+NHI_EnteroviralInfection[order(NHI_EnteroviralInfection$健保就診總人次, decreasing=TRUE), ]
+
+
+NHI_EnteroviralInfection[order(NHI_EnteroviralInfection$腸病毒健保就診人次, decreasing=TRUE), ]
+
+NHI_EnteroviralInfection$腸病毒健保就診ratio <- NHI_EnteroviralInfection$腸病毒健保就診人次 / NHI_EnteroviralInfection$健保就診總人次
+
+new_taipei <- NHI_EnteroviralInfection[ NHI_EnteroviralInfection$縣市 == '新北市', ]
+new_taipei[order(new_taipei$腸病毒健保就診ratio, decreasing=TRUE), ]
+
+dataset <- new_taipei[new_taipei$年齡別 == '3-4' & new_taipei$就診類別 == '住院', c('年','週', '腸病毒健保就診人次') ]
+
+hist(dataset$腸病毒健保就診人次)
+boxplot(dataset$腸病毒健保就診人次)
+plot(dataset$腸病毒健保就診人次, type = 'line', main='腸病毒分析結果', col="red")
+
+stat <- tapply(NHI_EnteroviralInfection$腸病毒健保就診人次,NHI_EnteroviralInfection$縣市, sum)
+
+stat2 <- sort(stat, decreasing = TRUE)
+barplot(stat2)
+pie(stat2, init.angle = 90, clockwise = TRUE)
+
+```
+
+## List
+```{r}
+phone <-list(thing="iphoneX" , height=5.65, width=2.79 )
+phone
+phone$thing
+phone$height
+
+
+student <- list(name = 'Toby',score =c(87,57,72))
+student$score
+
+student$score[1]
+min(student$score)
+
+student[[1]]
+
+li <- list(c(70,65,90), c(56,75,66,63))
+
+li[[1]]
+li[[2]]
+
+mean(li[[1]])
+mean(li[[2]])
+
+
+?lapply
+lapply(li, mean)
+
+
+sum(li[[1]])
+sum(li[[2]])
+lapply(li, sum)
+
+
+a <- 180
+b <- 250
+a
+b
+print(a)
+print(b)
+
+
+x <- 5
+
+if(x > 3){
+  print("x > 3")
+}else{
+  print("x<=3")
+}
+
+
+x <- 2
+if(x > 3){
+  print("x > 3")
+} else if( x==3 ){
+  print("x == 3")
+} else{
+  print("x<=3")
+}
+
+
+1:10
+
+for (qoo in 1:10){
+  print(qoo)
+}
+
+# using for loop: not recommend  
+s <- 0
+for (qoo in 1:100){
+  s <- s + qoo
+}
+s
+
+# using built-in function: recommended method
+sum(1:100)
+
+# using for loop: not recommend  
+for (qoo in 1:10){
+  print(qoo ^ (1/2))
+}
+
+# using vectorize programming: recommended method
+(1:10) ^ (1/2)
+
+
+
+x <-c("sunny","rainy", "cloudy", "rainy", "cloudy")
+
+length(x)
+x[1]
+
+for( i in 1:length(x)){
+  print(x[i])
+}
+
+seq_along(x)
+
+for(i in seq_along(x)){
+  print(x[i])
+}
+
+for(letter in x){
+  print(letter)
+}
+
+
+s   <- 0 
+cnt <- 0
+
+while (cnt <= 100){
+  s   <- s + cnt 
+  cnt <- cnt + 1
+}
+s
+cnt
+
+sum(1:100)
+
+
+## while loop: becareful infinity loop
+
+#cnt <- 0
+#while (cnt <= 100){
+#  s   <- s + cnt 
+#  #cnt <- cnt + 1
+#}
+
+
+url<-'https://tw.appledaily.com/new/realtime/'
+?paste
+paste(url, 1)
+paste(url, 1, sep = '' )
+paste0(url, 1)
+
+for (i in 1:10){
+  print(paste0(url,i))
+}
+
+lapply(1:10, function(i) paste0(url, i))
+
+f <- function(){
+}
+
+addNum <- function(a,b){
+  a + b
+}
+
+addNum(3,5)
+
+multiplyNum <- function(a,b){
+  a + b
+  a * b
+}
+
+multiplyNum(3,5)
+
+
+multiplyNum2 <- function(a,b){
+  a + b
+  return(a * b)
+}
+
+multiplyNum2(3,5)
+
+
+addNum <- function(a,b = 2){
+  a + b
+}
+
+addNum(3)
+addNum(5)
+
+addNum <- function(a = 3,b = 2){
+  a * 8 + b * 2
+}
+
+addNum()
+addNum(2,3)
+addNum(b=2,a=3)
+
+
+addNum <- function(a = 3,b = 2, pineapplepen = 7){
+  a * 8 + b * 2 + pineapplepen
+}
+
+addNum(3,5,2)
+
+addNum(a = 3,b = 5,pin = 2)
+
+addNum <- function(a = 2, b = 3){
+  s <- a+b
+  s
+}
+
+addNum(3,5)
+addNum()
+
+
+f <- function(a,b){
+  a * 2
+}
+
+f(3)
+
+f <- function(a,b){
+  return(a + b)
+}
+#f(3)
+
+f <- function(a,b = 3){
+  return(a+b)
+}
+f(3)
+
+
+?file
+f <- file('https://raw.githubusercontent.com/ywchiu/cdc_course/master/data/disease.txt')
+article <- readLines(f)
+#article
+close(f)
+
+# split a string by given delimiter
+?strsplit
+a <- 'this is a book'
+strsplit(a, ' ')
+
+#using unlist to convert list to vec
+?unlist
+b <- list(c(1,2), c(2,3))
+b
+unlist(b)
+
+# count occurence of an element of a vector
+?table
+a <- c(1,2,1,2,3,3,2)
+table(a)
+
+wordcount <- function(article){
+  article.split <- strsplit(article, ' ')
+  article.vec   <- unlist(article.split)
+  tb <- table(article.vec)
+  sort(tb, decreasing = TRUE)
+}
+
+stopwords <- c("a", "about", "above", "above", "across", "after", "afterwards", "again", "against", "all", "almost", "alone", "along", "already", "also","although","always","am","among", "amongst", "amoungst", "amount",  "an", "and", "another", "any","anyhow","anyone","anything","anyway", "anywhere", "are", "around", "as",  "at", "back","be","became", "because","become","becomes", "becoming", "been", "before", "beforehand", "behind", "being", "below", "beside", "besides", "between", "beyond", "bill", "both", "bottom","but", "by", "call", "can", "cannot", "cant", "co", "con", "could", "couldnt", "cry", "de", "describe", "detail", "do", "done", "down", "due", "during", "each", "eg", "eight", "either", "eleven","else", "elsewhere", "empty", "enough", "etc", "even", "ever", "every", "everyone", "everything", "everywhere", "except", "few", "fifteen", "fify", "fill", "find", "fire", "first", "five", "for", "former", "formerly", "forty", "found", "four", "from", "front", "full", "further", "get", "give", "go", "had", "has", "hasnt", "have", "he", "hence", "her", "here", "hereafter", "hereby", "herein", "hereupon", "hers", "herself", "him", "himself", "his", "how", "however", "hundred", "ie", "if", "in", "inc", "indeed", "interest", "into", "is", "it", "its", "itself", "keep", "last", "latter", "latterly", "least", "less", "ltd", "made", "many", "may", "me", "meanwhile", "might", "mill", "mine", "more", "moreover", "most", "mostly", "move", "much", "must", "my", "myself", "name", "namely", "neither", "never", "nevertheless", "next", "nine", "no", "nobody", "none", "noone", "nor", "not", "nothing", "now", "nowhere", "of", "off", "often", "on", "once", "one", "only", "onto", "or", "other", "others", "otherwise", "our", "ours", "ourselves", "out", "over", "own","part", "per", "perhaps", "please", "put", "rather", "re", "same", "see", "seem", "seemed", "seeming", "seems", "serious", "several", "she", "should", "show", "side", "since", "sincere", "six", "sixty", "so", "some", "somehow", "someone", "something", "sometime", "sometimes", "somewhere", "still", "such", "system", "take", "ten", "than", "that", "the", "their", "them", "themselves", "then", "thence", "there", "thereafter", "thereby", "therefore", "therein", "thereupon", "these", "they", "thickv", "thin", "third", "this", "those", "though", "three", "through", "throughout", "thru", "thus", "to", "together", "too", "top", "toward", "towards", "twelve", "twenty", "two", "un", "under", "until", "up", "upon", "us", "very", "via", "was", "we", "well", "were", "what", "whatever", "when", "whence", "whenever", "where", "whereafter", "whereas", "whereby", "wherein", "whereupon", "wherever", "whether", "which", "while", "whither", "who", "whoever", "whole", "whom", "whose", "why", "will", "with", "within", "without", "would", "yet", "you", "your", "yours", "yourself", "yourselves", "the","-")
+
+wordcount <- function(article){
+  article.split <- strsplit(article, ' ')
+  article.vec   <- unlist(article.split)
+  tb <- table(article.vec[! article.vec %in% stopwords])
+  
+  sort(tb, decreasing = TRUE)
+}
+
+wordcount(article)
+# install.packages('wordcloud2')
+library(wordcloud2)
+wordcloud2(wordcount(article))
+
+
+```
+

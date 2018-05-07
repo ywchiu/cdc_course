@@ -1,0 +1,297 @@
+---
+title: "Demo20180321"
+author: "David Chiu"
+date: "20183る21ら"
+output: html_document
+---
+
+## 璸衡穝籇い迭瞷Ω计
+```{r}
+f <- file('https://raw.githubusercontent.com/ywchiu/cdc_course/master/data/disease.txt')
+article <- readLines(f)
+close(f)
+
+class(article)
+str(article)
+
+?strsplit
+
+article.split <- strsplit(tolower(article), " |,|'|\\.")
+class(article.split)
+
+?unlist
+article.vec <- unlist(article.split)
+
+?table
+tb <- table(article.vec)
+
+
+head(sort(tb, decreasing = TRUE))
+
+
+stopwords <- c("a", "about", "above", "above", "across", "after", "afterwards", "again", "against", "all", "almost", "alone", "along", "already", "also","although","always","am","among", "amongst", "amoungst", "amount",  "an", "and", "another", "any","anyhow","anyone","anything","anyway", "anywhere", "are", "around", "as",  "at", "back","be","became", "because","become","becomes", "becoming", "been", "before", "beforehand", "behind", "being", "below", "beside", "besides", "between", "beyond", "bill", "both", "bottom","but", "by", "call", "can", "cannot", "cant", "co", "con", "could", "couldnt", "cry", "de", "describe", "detail", "do", "done", "down", "due", "during", "each", "eg", "eight", "either", "eleven","else", "elsewhere", "empty", "enough", "etc", "even", "ever", "every", "everyone", "everything", "everywhere", "except", "few", "fifteen", "fify", "fill", "find", "fire", "first", "five", "for", "former", "formerly", "forty", "found", "four", "from", "front", "full", "further", "get", "give", "go", "had", "has", "hasnt", "have", "he", "hence", "her", "here", "hereafter", "hereby", "herein", "hereupon", "hers", "herself", "him", "himself", "his", "how", "however", "hundred", "ie", "if", "in", "inc", "indeed", "interest", "into", "is", "it", "its", "itself", "keep", "last", "latter", "latterly", "least", "less", "ltd", "made", "many", "may", "me", "meanwhile", "might", "mill", "mine", "more", "moreover", "most", "mostly", "move", "much", "must", "my", "myself", "name", "namely", "neither", "never", "nevertheless", "next", "nine", "no", "nobody", "none", "noone", "nor", "not", "nothing", "now", "nowhere", "of", "off", "often", "on", "once", "one", "only", "onto", "or", "other", "others", "otherwise", "our", "ours", "ourselves", "out", "over", "own","part", "per", "perhaps", "please", "put", "rather", "re", "same", "see", "seem", "seemed", "seeming", "seems", "serious", "several", "she", "should", "show", "side", "since", "sincere", "six", "sixty", "so", "some", "somehow", "someone", "something", "sometime", "sometimes", "somewhere", "still", "such", "system", "take", "ten", "than", "that", "the", "their", "them", "themselves", "then", "thence", "there", "thereafter", "thereby", "therefore", "therein", "thereupon", "these", "they", "thickv", "thin", "third", "this", "those", "though", "three", "through", "throughout", "thru", "thus", "to", "together", "too", "top", "toward", "towards", "twelve", "twenty", "two", "un", "under", "until", "up", "upon", "us", "very", "via", "was", "we", "well", "were", "what", "whatever", "when", "whence", "whenever", "where", "whereafter", "whereas", "whereby", "wherein", "whereupon", "wherever", "whether", "which", "while", "whither", "who", "whoever", "whole", "whom", "whose", "why", "will", "with", "within", "without", "would", "yet", "you", "your", "yours", "yourself", "yourselves", "the","-")
+
+
+tb2 <- tb[! names(tb) %in% stopwords]
+sort(tb2, decreasing = TRUE)
+
+
+a <- 'HAHAHA'
+tolower(a)
+
+library(wordcloud2)
+?wordcloud2
+
+
+wordcloud2(tb2, shape = 'star')
+
+
+
+wordcount <-  function(article){
+  article.split <- strsplit(tolower(article), " |,|'|\\.")
+  article.vec <- unlist(article.split)
+  tb <- table(article.vec)
+  tb2 <- tb[! names(tb) %in% stopwords]
+  return(tb2)
+}
+
+#wordcount
+#wordcount(article)
+
+wordcloud2(wordcount(article), shape = 'star')
+
+
+wordcount2 <-  function(url){
+  f <- file(url)
+  article <- readLines(f)
+  close(f)  
+  article.split <- strsplit(tolower(article), " |,|'|\\.")
+  article.vec <- unlist(article.split)
+  tb <- table(article.vec)
+  tb2 <- tb[! names(tb) %in% stopwords]
+  return(tb2)
+}
+
+res <- wordcount2('https://raw.githubusercontent.com/ywchiu/cdc_course/master/data/cnn.txt')
+
+#sort(res, decreasing = TRUE)
+wordcloud2(res, shape='star')
+
+#source('add.R')
+
+```
+
+
+## Apply Function
+```{r}
+x <- list(c(1,2,3,4), c(5,6,7))
+x
+sum(x[[1]])
+sum(x[[2]])
+
+# method 1
+ary <- c()
+for(ele in x){
+  #print(ele)
+  #print(sum(ele))
+  ary <- c(ary, sum(ele))
+}
+ary
+
+# metohd 2
+ary2 <- c()
+for( i in seq_along(x)){
+  ary2 <- c(ary2 , sum(x[[i]]))
+}
+ary2
+
+# method 3
+ary3 <- c(0,0)
+for( i in seq_along(x)){
+  ary3[i] <- sum(x[[i]])
+}
+ary3
+
+# method 4
+lapply(x, sum)
+
+# method comparison
+# method 4 > method 3 > method 2 = method 1
+
+
+m1 <- matrix(1:4, byrow=TRUE, nrow=2)
+m2 <- matrix(5:8, byrow=TRUE, nrow=2)
+#m2
+li <- list(m1, m2)
+lapply(li, sum)
+lapply(li, mean)
+
+
+
+m1[1,]
+
+getFirstRow <- function(m){
+  return(m[1,])
+}
+
+
+lapply(li, getFirstRow)
+
+lapply(li, function(m) m[1,])
+
+x <- list(c(1,2,3,4),c(5,6,7,8))
+
+lapply(x, sum)
+unlist(lapply(x, sum))
+
+# sapply : s => Simplified
+sapply(x, sum)
+
+
+m1 <- matrix(1:4, byrow=TRUE, nrow=2)
+m2 <- matrix(5:8, byrow=TRUE, nrow=2)
+
+li <- list(m1,m2)
+lapply(li, function(m) m[1,])
+
+sapply(li, function(m) m[1,])
+sapply(li, mean)
+
+
+m <- matrix(1:4, byrow=TRUE, nrow=2)
+rowSums(m)
+colSums(m)
+
+apply(m, 1, sum)
+apply(m, 2, sum)
+
+apply(m, 1, mean)
+apply(m, 2, mean)
+
+# tapply
+x <- c(80,70,59,88,72,57)
+t <- c(1,1,2,1,1,2)
+tapply(x, t, mean)
+
+
+data(iris)
+tapply(iris$Sepal.Length, iris$Species, mean)
+
+
+## read dengue dataset
+
+library(readr)
+Dengue <- read_csv("https://raw.githubusercontent.com/ywchiu/cdc_course/master/data/Dengue.csv")
+View(Dengue)
+
+stat <- tapply(Dengue$痜ㄒ计 , Dengue$稰琕瓣產, sum)
+
+barplot(sort(stat, decreasing = TRUE))
+sort(stat, decreasing = TRUE)
+
+stat2 <- tapply(Dengue$痜ㄒ计 , Dengue$祇痜, sum)
+sort(stat2, decreasing = TRUE)
+plot(x = names(stat2 ), y = stat2, type= 'o')
+
+
+stat3 <- tapply(Dengue$痜ㄒ计 , Dengue$┦, sum)
+pie(stat3)
+
+
+```
+
+## DPLYR
+```{r}
+#install.packages('dplyr')
+library(dplyr)
+
+help(package = 'dplyr')
+
+
+library(readr)
+Dengue <- read_csv("https://raw.githubusercontent.com/ywchiu/cdc_course/master/data/Dengue.csv")
+
+# R Method
+Dengue[Dengue$稰琕瓣產 == 'い地チ瓣'    ,  ]
+
+# DplyR Method
+filter(Dengue, 稰琕瓣產 == 'い地チ瓣')
+
+
+# R Method
+Dengue[Dengue$┦ == '╧' & Dengue$痜ㄒ计 >= 100    ,  ]
+# DPLYR
+filter(Dengue, ┦=='╧' & 痜ㄒ计 >= 100)
+
+
+# R Method
+Dengue[Dengue$┦ == '╧' | Dengue$痜ㄒ计 >= 100    ,  ]
+# DPLYR
+filter(Dengue, ┦=='╧' | 痜ㄒ计 >= 100)
+
+# R Method
+Dengue[Dengue$﹡郡カ %in% c('カ', '玭カ'),  ]
+
+# DPLYR Method
+filter(Dengue, ﹡郡カ %in% c('カ', '玭カ'))
+
+
+# R Method
+Dengue[ , c('﹡郡カ', '痜ㄒ计')]
+
+# DPLYR Method
+select(Dengue, '﹡郡カ', '痜ㄒ计')
+
+
+# R Method
+a <- Dengue[ Dengue$┦ == '╧' & Dengue$痜ㄒ计 >= 100, c('﹡郡カ', '痜ㄒ计')]
+tapply(a$痜ㄒ计, a$﹡郡カ, sum)
+
+# DPLYR Method
+Dengue %>%
+  filter(┦ == '╧' & 痜ㄒ计 >= 100) %>%
+  select('﹡郡カ', '痜ㄒ计')
+
+Dengue %>%
+  filter(┦ == '╧' & 痜ㄒ计 >= 100) %>%
+  select('﹡郡カ', '痜ㄒ计') %>%
+  group_by(﹡郡カ) %>%
+  summarise(s = sum(痜ㄒ计))
+
+# SELECT ﹡郡カ, sum(痜ㄒ计) FROM Dengue WHERE ┦ = '╧' AND 痜ㄒ计 >= 100 GROUP BY ﹡郡カ
+
+
+Dengue %>%
+  filter(痜ㄒ计 >= 100) %>%
+  select('﹡郡カ', '┦','痜ㄒ计') %>%
+  group_by(﹡郡カ, ┦) %>%
+  summarise(s = sum(痜ㄒ计))
+
+# SELECT ﹡郡カ, ┦, sum(痜ㄒ计) FROM Dengue WHERE 痜ㄒ计 >= 100 GROUP BY ﹡郡カ,┦
+
+# R Method
+sum(tail(head(iris), 3)$Sepal.Length)
+
+# Magrittr Method
+iris %>% 
+  head() %>%
+  tail(3) %>%
+  .$Sepal.Length %>%
+  sum()
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+

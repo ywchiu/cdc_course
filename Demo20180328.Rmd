@@ -1,0 +1,316 @@
+---
+title: "Demo20180328"
+author: "David Chiu"
+date: "2018年3月28日"
+output: html_document
+---
+
+## 作業二
+
+```{r}
+library(readr)
+
+# method 1 : from web
+Dengue <- read_csv("https://raw.githubusercontent.com/ywchiu/cdc_course/master/data/Dengue.csv")
+
+
+# method 2 : from local
+getwd()
+Dengue <- read_csv('C:/Users/nc19/Downloads/Dengue.csv')
+
+# Examine Data
+class(Dengue)
+str(Dengue)
+summary(Dengue)
+
+
+Dengue$居住縣市 <- as.factor(Dengue$居住縣市)
+Dengue$性別 <- as.factor(Dengue$性別)
+Dengue$是否境外移入 <- as.factor(Dengue$是否境外移入)
+Dengue$感染國家 <- as.factor(Dengue$感染國家)
+
+summary(Dengue)
+
+head(Dengue)
+
+
+#1. 請回答該資料集有多少筆資料?
+#dim(Dengue)
+nrow(Dengue)
+
+#2. 資料集有包含哪些感染國家? 並回答國家個數?
+
+# method 1
+Dengue$感染國家 <- as.factor(Dengue$感染國家)
+levels(Dengue$感染國家)
+length(levels(Dengue$感染國家)) - 1
+
+# method 2
+country_cate <- levels(Dengue$感染國家)
+country_cate[country_cate != 'None']
+length(country_cate[country_cate != 'None'])
+
+# method 3
+country_cate[! country_cate %in% c('None')]
+length(country_cate[! country_cate %in% c('None')])
+
+
+#3. 請計算在2011年中，有多少個確定病例數
+sum(Dengue[Dengue$發病年 == 2011, '病例數' ])
+
+#4. 請計算感染國為中華民國的確定病例數有多少件?
+sum(Dengue[Dengue$感染國家 == '中華民國', '病例數' ])
+
+#5. 請找出2014年居住於台北市的女性確診病例有多少件
+sum(Dengue[Dengue$發病年 == 2014 & Dengue$居住縣市 == '台北市' & Dengue$性別 == '女', '病例數' ])
+
+#6. 請找出中華民國在2014年時，哪個縣市有最多男性確定病例?
+stat <- Dengue[Dengue$發病年 == 2014 & Dengue$感染國家 == '中華民國' & Dengue$性別 == '男', c('居住縣市','病例數') ]
+
+stat[order(stat$病例數, decreasing=TRUE), ][1,'居住縣市']
+
+#7. 繼第6題，請問有多少確定病例數?
+stat[order(stat$病例數, decreasing=TRUE), ][1,'病例數']
+
+#8. 請回答台南市在哪一年有最多男性確定病例?
+stat <- Dengue[Dengue$居住縣市 == '台南市' & Dengue$性別 == '男', c('發病年','病例數') ]
+
+stat[order(stat$病例數, decreasing=TRUE), ][1,]
+
+head(stat[order(stat$病例數, decreasing=TRUE), ], 1)
+
+
+
+# Stat by country
+grades <- c(70,82,50,60,80,90)
+group  <- c(1,1,2,2,1,1)
+tapply(grades, group, mean)
+
+tapply(Dengue$病例數, Dengue$感染國家, sum)
+
+
+# Stat by country & year
+# SELECT country, year, sum(病例數) FROM Dengue GROUP BY country, year 
+
+# install.packages('dplyr')
+library(dplyr)
+Dengue %>%
+  group_by(感染國家) %>%
+  summarize(stat_sum = sum(病例數))
+
+Dengue %>%
+  group_by(發病年,感染國家) %>%
+  summarize(stat_sum = sum(病例數))
+
+
+#3. 請計算在2011年中，有多少個確定病例數
+# sum(Dengue[Dengue$發病年 == 2011, '病例數' ])
+Dengue %>%
+  filter(發病年 == 2011) %>%
+  select('病例數') %>%
+  sum()
+
+#4. 請計算感染國為中華民國的確定病例數有多少件?
+#sum(Dengue[Dengue$感染國家 == '中華民國', '病例數' ])
+Dengue %>%
+  filter(感染國家 == '中華民國') %>%
+  select('病例數') %>%
+  sum()
+
+#5. 請找出2014年居住於台北市的女性確診病例有多少件
+#sum(Dengue[Dengue$發病年 == 2014 & Dengue$居住縣市 == '台北市' & Dengue$性別 == '女', '病例數' ])
+Dengue %>%
+  filter(感染國家 == '中華民國' & 發病年 == 2014 & 居住縣市 == '台北市' & 性別 == '女') %>%
+  select('病例數') %>%
+  sum()
+
+#6. 請找出中華民國在2014年時，哪個縣市有最多男性確定病例?
+#stat <- Dengue[Dengue$發病年 == 2014 & Dengue$感染國家 == '中華民國' & Dengue$性別 == '男', c('居住縣市','病例數') ]
+#stat[order(stat$病例數, decreasing=TRUE), ][1,'居住縣市']
+Dengue %>%
+  filter(感染國家 == '中華民國' & 發病年 == 2014 & 性別 == '男') %>%
+  arrange(desc(病例數)) %>%
+  select('居住縣市') %>%
+  head(1)
+
+
+#7. 繼第6題，請問有多少確定病例數?
+#stat[order(stat$病例數, decreasing=TRUE), ][1,'病例數']
+Dengue %>%
+  filter(感染國家 == '中華民國' & 發病年 == 2014 & 性別 == '男') %>%
+  arrange(desc(病例數)) %>%
+  select('病例數') %>%
+  head(1)
+
+#8. 請回答台南市在哪一年有最多男性確定病例?
+Dengue %>%
+  filter(居住縣市 == '台南市' & 性別 == '男') %>%
+  arrange(desc(病例數)) %>%
+  select('發病年') %>%
+  head(1)
+
+```
+
+## Dplyr:mutate
+```{r}
+frequsum <- Dengue %>% 
+  select('病例數') %>%
+  sum()
+
+
+# method 1
+#Dengue$portion <- Dengue$病例數 / frequsum
+
+# method 2
+Dengue %>%
+  select('病例數') %>%
+  mutate(portion = 病例數 / frequsum) %>%
+  head()
+
+Dengue <- Dengue %>% mutate(portion = 病例數 / frequsum) 
+
+```
+
+## group by & summarize
+```{r}
+Dengue %>%
+  group_by(性別) %>%
+  summarise(instance_num = sum(病例數, na.rm=TRUE))
+
+
+a <- c(80,70,50, NA)
+sum(a)
+?sum
+
+sum(a, na.rm = TRUE)
+
+
+
+Dengue %>%
+  group_by(居住縣市) %>%
+  summarise(instance_num = sum(病例數, na.rm=TRUE)) %>%
+  head()
+
+Dengue %>%
+  group_by(感染國家) %>%
+  summarise(instance_num = sum(病例數, na.rm=TRUE)) %>%
+  head()
+
+
+Dengue %>%
+  group_by(發病年,感染國家, 居住縣市) %>%
+  summarise(instance_num = sum(病例數, na.rm=TRUE)) %>%
+  head()
+
+```
+
+## Dplyr Arrange
+```{r}
+Dengue %>%
+  group_by(居住縣市) %>%
+  summarise(instance_num = sum(病例數, na.rm=TRUE)) %>%
+  arrange(instance_num)
+
+
+Dengue %>%
+  group_by(居住縣市) %>%
+  summarise(instance_num = sum(病例數, na.rm=TRUE)) %>%
+  arrange(desc(instance_num))
+
+
+Dengue %>%
+  group_by(發病年,感染國家, 居住縣市) %>%
+  summarise(instance_num = sum(病例數, na.rm=TRUE)) %>%
+  arrange(desc(發病年, 感染國家))
+
+
+```
+
+## Dplyr: summarize_each
+```{r}
+Dengue %>%
+  group_by(居住縣市) %>%
+  summarise_each(funs(min,max,mean),  '病例數')
+
+# SELECT 居住縣市, min(病例數), min(portion), max(病例數), max(portion), avg(病例數), avg(portion) FROM Dengue GROUP BY 居住縣市
+Dengue %>%
+  group_by(居住縣市) %>%
+  summarise_each(funs(min(., na.rm=TRUE),max(., na.rm=TRUE),mean(., na.rm=TRUE)),  c('病例數','portion'))
+```
+
+## Dplyr:join
+```{r}
+?dplyr::join
+
+county_stat <- Dengue %>%
+  group_by(居住縣市) %>%
+  summarise(instance_sum = sum(病例數))
+
+# method 1
+inner_join(Dengue, county_stat, by="居住縣市") %>%
+  head()
+
+# method 2
+Dengue %>%
+  inner_join(county_stat, by="居住縣市") %>%
+  head()
+
+?merge
+# method 3 : data frame method
+merge(Dengue, county_stat, by = '居住縣市')
+
+
+a <- data.frame(a=c(1,2,3), b=c(0,0,0))
+b <- data.frame(a=c(4,5,6), b=c(1,1,1))
+df1 <- rbind(a, b)
+df1
+
+df2 <- cbind(a, b)
+df2
+```
+
+## reshape2
+```{r}
+#install.packages('reshape2')
+library(reshape2)
+help(package = 'reshape2')
+?dcast      
+
+data("airquality")      
+airquality
+
+names(airquality) <- tolower(names(airquality))
+
+aqm <- melt(airquality, id=c("month", "day"), na.rm=TRUE)
+aqm
+
+dcast(aqm, month ~ variable, mean, margins = c("month", "variable"))
+
+county_stat <- Dengue %>%
+  group_by(發病年, 居住縣市) %>%
+  summarise_each(funs(sum(., na.rm=TRUE)), '病例數')
+
+sex_stat <- Dengue %>%
+  group_by(發病年, 性別) %>%
+  summarise_each(funs(sum(., na.rm=TRUE)), '病例數')
+
+country_stat <- Dengue %>%
+  group_by(發病年, 感染國家) %>%
+  summarise_each(funs(sum(., na.rm=TRUE)), '病例數')
+
+names(county_stat) <- c('year', 'variable', 'cnt')
+names(sex_stat) <- c('year', 'variable', 'cnt')
+names(country_stat) <- c('year', 'variable', 'cnt')
+
+country_stat <-as.data.frame(country_stat)
+sex_stat     <-as.data.frame(sex_stat)
+county_stat  <-as.data.frame(county_stat)
+
+df <- rbind(county_stat, sex_stat, country_stat)
+
+
+dcast(df,  variable ~ year, function(e) sum(e,na.rm=TRUE), margins = c("year", "variable"))
+
+```
+
+

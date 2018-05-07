@@ -1,0 +1,201 @@
+---
+title: "Demo20180411"
+author: "David Chiu"
+date: "2018¦~4¤ë11¤é"
+output: html_document
+---
+
+## Scatter Plot
+```{r}
+load("C:/Users/nc20/Downloads/cdc.Rdata")
+plot(cdc$weight, cdc$wtdesire)
+
+# y = ax + b
+# wtdesire = a* weight + b
+plot(wtdesire ~ weight, data = cdc)
+
+?lm
+fit <- lm(wtdesire ~ weight, data = cdc)
+
+# wtdesire = 0.639 * weight + 46.664
+fit
+
+
+plot(wtdesire ~ weight, data = cdc)
+abline(v = 450, col='blue')
+abline(h = 400, col='orange')
+abline(fit    , col='red')
+
+
+data(iris)
+head(iris)
+
+x <- iris[,1]
+y <- iris[,3]
+s <- iris[,5]
+s
+
+xlab <- names(iris)[1]
+ylab <- names(iris)[3]
+#plot(x,y, xlab = xlab, ylab = ylab, col='red')
+plot(x,y, xlab = xlab, ylab = ylab, col=s)
+color_lab <- ifelse(iris[,3] > median(iris[,3]), 'red', 'blue')
+cex_lab   <- ifelse(iris[,3] > median(iris[,3]), 3, 1)
+#cex_lab
+plot(x,y, xlab = xlab, ylab = ylab, col=color_lab, cex = cex_lab, pch=19)
+
+
+
+x <- iris[,1]
+y <- iris[,3]
+
+xlab <- names(iris)[1]
+ylab <- names(iris)[3]
+
+
+setosa     <- iris$Species == 'setosa'
+versicolor <- iris$Species == 'versicolor'
+setosa     <- which(iris$Species == 'setosa')
+versicolor <- which(iris$Species == 'versicolor')
+
+plot(x,y, xlab=xlab, ylab=ylab, type= 'n')
+points(iris[setosa,1], iris[setosa,3], col= 'green')
+points(iris[versicolor,1], iris[versicolor,3], col= 'red')
+
+
+data('anscombe')
+fit <- lm(y3 ~ x1, data = anscombe)
+plot(y3 ~ x1, data = anscombe)
+abline(fit, col='red')
+
+fit <- lm(y3[x1!=13] ~ x1[x1!=13], data = anscombe)
+plot(y3 ~ x1, data = anscombe)
+abline(fit, col='red')
+
+library(MASS)
+fit <- rlm(y3 ~ x1, data = anscombe)
+plot(y3 ~ x1, data = anscombe)
+abline(fit, col='red')
+
+
+head(cdc)
+plot(wtdesire ~ weight, data = cdc)
+fit <- lm(wtdesire ~ weight, data = cdc)
+abline(fit, col='red')
+
+
+plot(wtdesire ~ weight, data = cdc, col= gender)
+
+male   <- cdc$gender == 'm'
+female <- cdc$gender == 'f'
+
+fit_male   <- lm(wtdesire ~ weight, data = cdc[male,])
+fit_female <- lm(wtdesire ~ weight, data = cdc[female,])
+plot(wtdesire ~ weight, data = cdc, type='n')
+points(wtdesire ~ weight, data = cdc[male,], col='blue')
+abline(fit_male, col='orange', lwd=3)
+points(wtdesire ~ weight, data = cdc[female,], col='red')
+abline(fit_female, col='purple', lwd=3)
+
+```
+
+## Mosaic Plot
+```{r}
+table(cdc$gender)
+table(cdc$smoke100)
+tb <- table(cdc$gender, cdc$smoke100)
+
+mosaicplot(tb, col=rainbow(2), main= 'Smokers by Gender')
+```
+
+## Boxplot
+```{r}
+hist(cdc$weight)
+hist(cdc$height)
+
+
+boxplot(cdc$weight)
+
+
+grades <- c(0,45,50,60,70,65,72,80,100)
+sort(grades)
+median(grades)
+quantile(grades, 0.75)
+quantile(grades, 0.25)
+
+# 72 - 50
+IQR(grades)
+
+boxplot(grades)
+
+min(grades[grades > (median(grades) - 1.5 * IQR(grades))])
+max(grades[grades > (median(grades) + 1.5 * IQR(grades))])
+
+
+boxplot(cdc$height ~ cdc$gender)
+
+```
+
+## Legend
+```{r}
+Taipei <- c(92.5,132.6,168.8,159.1,218.7)
+Tainan <- c(21.2, 30.6, 37.3, 84.6, 184.3)
+
+plot(Taipei, type= 'o', ylim=c(0,260), xlim=c(1,6), col='blue', xlab='Month', ylab = 'Rainfall', main = 'Taipei Rainfall v.s. Tainan Rainfall')
+lines(Tainan, type= 'o',col='red',pch=22, lty=2)
+text(5.5, 230, 'Taipei', col='blue')
+text(5.5, 200, 'Tainan', col='red')
+legend(x=1, y=200, c('Taipei', 'Tainan'), lwd=2, col=c('blue', 'red'), lty=c(1,2))
+legend('bottomright', c('Taipei', 'Tainan'), lwd=2, col=c('blue', 'red'), lty=c(1,2))
+
+
+housePrice <- read.csv('https://raw.githubusercontent.com/ywchiu/rtibame/master/data/house-prices.csv', header = TRUE)
+bedroomTable <- table(housePrice$Bedrooms)
+
+tb <- sort(bedroomTable, decreasing = TRUE)
+pie(tb, labels = c('3 Units', '2 Units', '4 Units', '5 Units'), init.angle = 90, clockwise = TRUE, col=rainbow(4),main = 'Bedroom Pie Chart')
+legend('bottomright', c('3 Units', '2 Units', '4 Units', '5 Units'), fill=rainbow(4))
+```
+
+## Par
+```{r}
+showLayout <- function(n){
+  for(i in 1:n){
+    plot(1,type="n",xaxt="n",yaxt="n",xlab="",ylab="")
+    text(1, 1, labels=i, cex=10)
+    }
+}
+
+
+par(mfrow=c(3,2), mar=c(1,1,1,1))
+showLayout(6)
+
+par(mfcol=c(3,2), mar=c(1,1,1,1))
+showLayout(6)
+
+par(mfrow=c(3,2), mar=c(3,3,3,3))
+showLayout(6)
+
+
+```
+
+
+## Save Figure to Disk
+```{r}
+par(mfrow=c(1,1))
+housePrice <- read.csv('https://raw.githubusercontent.com/ywchiu/rtibame/master/data/house-prices.csv', header = TRUE)
+bedroomTable <- table(housePrice$Bedrooms)
+
+tb <- sort(bedroomTable, decreasing = TRUE)
+pie(tb, labels = c('3 Units', '2 Units', '4 Units', '5 Units'), init.angle = 90, clockwise = TRUE, col=rainbow(4),main = 'Bedroom Pie Chart')
+legend('bottomright', c('3 Units', '2 Units', '4 Units', '5 Units'), fill=rainbow(4))
+
+
+jpeg('bedroompie.jpg')
+pie(tb, labels = c('3 Units', '2 Units', '4 Units', '5 Units'), init.angle = 90, clockwise = TRUE, col=rainbow(4),main = 'Bedroom Pie Chart')
+legend('bottomright', c('3 Units', '2 Units', '4 Units', '5 Units'), fill=rainbow(4))
+dev.off()
+```
+
+
+
