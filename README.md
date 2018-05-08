@@ -37,3 +37,6 @@
 
 ### Course 7
 - http://rpubs.com/ywchiu/Demo20180411
+
+### Course 8
+- http://rpubs.com/ywchiu/Demo20180508
