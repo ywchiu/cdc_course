@@ -40,3 +40,6 @@
 
 ### Course 8
 - http://rpubs.com/ywchiu/Demo20180508
+
+### Course 9
+- http://rpubs.com/ywchiu/Demo20180509
