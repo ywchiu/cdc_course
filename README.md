@@ -58,3 +58,6 @@
 
 ### Course 14
 - http://rpubs.com/ywchiu/Demo20180530
+
+### Course 15
+- http://rpubs.com/ywchiu/Demo20180605
