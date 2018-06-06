@@ -61,3 +61,7 @@
 
 ### Course 15
 - http://rpubs.com/ywchiu/Demo20180605
+
+### Course 16
+- http://rpubs.com/ywchiu/Demo20180606
+
