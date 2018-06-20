@@ -70,3 +70,6 @@
 
 ### Course 18
 - http://rpubs.com/ywchiu/Demo20180613
+
+### Course 19
+- http://rpubs.com/ywchiu/Demo20180620
