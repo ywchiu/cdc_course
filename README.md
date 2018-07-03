@@ -76,3 +76,10 @@
 
 ### Course 20
 - http://rpubs.com/ywchiu/Demo20180627
+
+### Course 21
+- http://rpubs.com/ywchiu/Demo20180703
+
+### Course 22
+- http://rpubs.com/ywchiu/Demo20180704
+
