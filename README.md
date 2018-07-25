@@ -85,3 +85,6 @@
 
 ### Course 23
 - http://rpubs.com/ywchiu/Demo20180718
+
+### Course 24
+- http://rpubs.com/ywchiu/Demo20180725
