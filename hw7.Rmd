@@ -1,0 +1,153 @@
+---
+title: "Demo20180725"
+author: "David Chiu"
+date: "2018年7月25日"
+output: html_document
+---
+
+## Homework 7
+```{r}
+heart.data <- read.csv("https://raw.githubusercontent.com/ywchiu/cdc_course/master/data/processed.cleveland.data.csv",header=FALSE,sep=",",na.strings = '?')
+
+names(heart.data) <- c( "age", "sex", "cp","trestbps", "chol","fbs", "restecg","thalach","exang","oldpeak","slope", "ca", "thal", "num")
+
+head(heart.data)
+
+str(heart.data)
+
+
+heart.data$heart_disease <- ifelse(heart.data$num ==0, 'normal','problem')
+heart.data$num <- NULL
+
+str(heart.data)
+
+
+heart.data$heart_disease <- as.factor(heart.data$heart_disease)
+
+# answer1
+library(rpart)
+fit <- rpart(heart_disease ~ ., data = heart.data)
+
+
+plot(fit, margin = 0.1)
+text(fit)
+
+library(rpart.plot)
+rpart.plot(fit)
+
+# answer 2
+predicted <- predict(fit, heart.data, type = 'class')
+
+## accuracy
+sum(heart.data$heart_disease == predicted) / length(heart.data$heart_disease)
+
+## confusion matrix
+table(heart.data$heart_disease, predicted)
+
+
+
+# answer 3
+library(ROCR)
+predictions1 <- predict(fit, heart.data, type="prob")
+pred.to.roc1 <- predictions1[, 2]
+pred.rocr1 <- prediction(pred.to.roc1, as.factor(heart.data$heart_disease))
+perf.rocr1 <- performance(pred.rocr1, measure = "auc", x.measure = "cutoff")
+perf.tpr.rocr1 <- performance(pred.rocr1, "tpr","fpr")
+
+plot(perf.tpr.rocr1,main='ROC Curve', col=1)
+legend(0.7, 0.2, c('rpart'), 1)
+
+auc <- attributes(perf.rocr1)$y.values[[1]]
+
+# answer 4
+library(randomForest)
+heart.data2 <- na.omit(heart.data)
+fit2 <- randomForest(heart_disease ~ ., data = heart.data2)
+
+predicted2 <- predict(fit2, heart.data2, type = 'class')
+
+sum(heart.data2$heart_disease == predicted2) / length(heart.data2$heart_disease)
+
+
+table(heart.data2$heart_disease, predicted2)
+
+# answer 5
+library(ROCR)
+predictions2 <- predict(fit2, heart.data2, type="prob")
+pred.to.roc2 <- predictions2[, 2]
+pred.rocr2 <- prediction(pred.to.roc2, as.factor(heart.data2$heart_disease))
+perf.rocr2 <- performance(pred.rocr2, measure = "auc", x.measure = "cutoff")
+perf.tpr.rocr2 <- performance(pred.rocr2, "tpr","fpr")
+
+
+plot(perf.tpr.rocr1,main='ROC Curve', col=1)
+legend(0.7, 0.2, c('rpart', 'randomforest'), 1:2)
+plot(perf.tpr.rocr2, col=2, add=TRUE)
+```
+
+## Refactor our homework answer
+```{r}
+heart.data <- read.csv("https://raw.githubusercontent.com/ywchiu/cdc_course/master/data/processed.cleveland.data.csv",header=FALSE,sep=",",na.strings = '?')
+
+names(heart.data) <- c( "age", "sex", "cp","trestbps", "chol","fbs", "restecg","thalach","exang","oldpeak","slope", "ca", "thal", "num")
+
+sum(is.na(heart.data))
+
+library(mice)
+heart.data <- mice(heart.data, print = FALSE)
+
+heart.data <- complete(heart.data, 'long')
+
+heart.data$.id <- NULL
+heart.data$.imp <- NULL
+
+heart.data$heart_disease <- ifelse(heart.data$num ==0, 'normal','problem')
+heart.data$heart_disease <- as.factor(heart.data$heart_disease)
+
+heart.data$num <- NULL
+
+str(heart.data)
+
+set.seed(42)
+idx <- sample.int(2, nrow(heart.data), replace=TRUE, prob = c(0.7, 0.3))
+trainset <- heart.data[idx==1, ]
+testset  <- heart.data[idx==2, ]
+
+fit1 <- rpart(heart_disease ~., data = trainset)
+fit2 <- randomForest(heart_disease ~., data = trainset)
+
+
+
+predicted1 <- predict(fit1, testset, type= 'class')
+
+sum(testset$heart_disease == predicted1) / length(testset$heart_disease)
+
+table(testset$heart_disease, predicted1)
+
+predicted2 <- predict(fit2, testset, type= 'class')
+sum(testset$heart_disease == predicted2) / length(testset$heart_disease)
+
+table(testset$heart_disease, predicted2)
+
+
+library(ROCR)
+predictions1 <- predict(fit1, testset, type="prob")
+pred.to.roc1 <- predictions1[, 2]
+pred.rocr1 <- prediction(pred.to.roc1, as.factor(testset$heart_disease))
+perf.rocr1 <- performance(pred.rocr1, measure = "auc", x.measure = "cutoff")
+perf.tpr.rocr1 <- performance(pred.rocr1, "tpr","fpr")
+
+predictions2 <- predict(fit2, testset, type="prob")
+pred.to.roc2 <- predictions2[, 2]
+pred.rocr2 <- prediction(pred.to.roc2, as.factor(testset$heart_disease))
+perf.rocr2 <- performance(pred.rocr2, measure = "auc", x.measure = "cutoff")
+perf.tpr.rocr2 <- performance(pred.rocr2, "tpr","fpr")
+
+
+
+plot(perf.tpr.rocr1,main='ROC Curve', col=1)
+legend(0.7, 0.2, c('rpart', 'randomforest'), 1:2)
+plot(perf.tpr.rocr2, col=2, add=TRUE)
+
+```
+
