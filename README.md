@@ -20,6 +20,9 @@
 ### Course 1
 - https://rpubs.com/ywchiu/Demo20200624
 
+### Course 2
+- https://rpubs.com/ywchiu/Demo20200701
+
 ## Workshop
 - https://rpubs.com/ywchiu/Workshop20200630
 
