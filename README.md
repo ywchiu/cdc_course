@@ -26,3 +26,5 @@
 ## Workshop
 - https://rpubs.com/ywchiu/Workshop20200630
 
+### R 文字探勘
+- https://rpubs.com/ywchiu/Demo20200702
