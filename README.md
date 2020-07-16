@@ -32,6 +32,7 @@
 ## Workshop
 - https://rpubs.com/ywchiu/Workshop20200630
 - https://rpubs.com/ywchiu/Workshop20200714
+- https://rpubs.com/ywchiu/Demo20200716
 
 ### R 文字探勘
 - https://rpubs.com/ywchiu/Demo20200702
