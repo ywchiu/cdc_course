@@ -43,6 +43,7 @@
 - https://rpubs.com/ywchiu/Workshop20200714
 - https://rpubs.com/ywchiu/Demo20200716_2
 - https://rpubs.com/ywchiu/Workshop20200723
+- https://rpubs.com/ywchiu/Demo20200806
 
 ### R 文字探勘
 - https://rpubs.com/ywchiu/Demo20200702
