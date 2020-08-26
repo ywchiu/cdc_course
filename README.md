@@ -44,6 +44,9 @@
 ### Course 9
 - https://rpubs.com/ywchiu/Demo20200819
 
+### Course 10
+- https://rpubs.com/ywchiu/Demo20200826
+
 ## Workshop
 - https://rpubs.com/ywchiu/Workshop20200630
 - https://rpubs.com/ywchiu/Workshop20200714
