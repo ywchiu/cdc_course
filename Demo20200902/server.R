@@ -10,7 +10,7 @@ library(tidyverse)
 library(shiny)
 library(plotly)
 # Define server logic required to draw a histogram
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
     covid19 <- read_csv('covid19.csv')
 
     output$distPlot <- renderPlotly({
@@ -26,20 +26,30 @@ shinyServer(function(input, output) {
             aes(x = Date, y = Case_Sum) +
             geom_line() +
             xlab('日期') +
-            ylab('個案數量')
+            ylab('個案數量') +
+            ggtitle(paste0(input$Country, '新冠肺炎趨勢圖'))
         ggplotly(g)
         #plot(Case_Sum ~ Date, data = data, type = 'l', col = 'red')
 
     })
 
-    output$table <- renderTable({
+    output$table <- renderDataTable({
         data  <- covid19 %>%
             filter((`Country/Region` == input$Country) & (`Case` == input$Case_Type)) %>%
             group_by(`Date`) %>%
             summarise(Case_Sum =  sum(Case_Number) , .groups = 'drop' ) %>%
-            select(日期=`Date`, 個案數量=`Case_Sum`)
+            select(日期=`Date`, 個案數量=`Case_Sum`) %>%
+            arrange(desc(`日期`))
+
         data$`日期` <- as.character(data$`日期`)
         data
+    }, options = list(
+        pageLength = 100
+        #initComplete = I("function(settings, json) {alert('Done.');}")
+    ))
+
+    observeEvent(input$Case_Type, {
+        updateSelectInput(session, "Country", choices = unique(covid19$`Country/Region`))
     })
 
 })
