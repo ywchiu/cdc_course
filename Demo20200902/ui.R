@@ -38,9 +38,7 @@ shinyUI(fluidPage(
             # Sidebar with a slider input for number of bins
             sidebarLayout(
                 sidebarPanel(
-                    selectInput("Case_Type",
-                                "個案情形:",
-                                choices = c('confirmed', 'deaths', 'recovered')),
+
                     selectInput("Country",
                                 "國家:",
                                 choices = c('Taiwan*', 'US', 'China'))
@@ -49,9 +47,10 @@ shinyUI(fluidPage(
 
                 # Show a plot of the generated distribution
                 mainPanel(
-                    tabsetPanel(
-                        tabPanel("Plot", plotlyOutput("distPlot")),
-                        tabPanel("Table", dataTableOutput('table'))
+                    tabsetPanel(id = "tabs",
+                        tabPanel(title = "確診", value = 'confirmed', plotlyOutput("distPlot"), dataTableOutput('table')),
+                        tabPanel(title = "死亡", value = 'deaths', plotlyOutput("distPlot1"), dataTableOutput('table1')),
+                        tabPanel(title = "康復", value = 'recovered', plotlyOutput("distPlot2"), dataTableOutput('table2'))
                     )
                 )
             )

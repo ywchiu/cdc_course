@@ -10,32 +10,26 @@ library(tidyverse)
 library(shiny)
 library(plotly)
 # Define server logic required to draw a histogram
-shinyServer(function(input, output, session) {
-    covid19 <- read_csv('covid19.csv')
 
-    output$distPlot <- renderPlotly({
+plotcovid <- function(input, tabs, covid19){
+    data  <- covid19 %>%
+        filter((`Country/Region` == input$Country) & (`Case` == tabs)) %>%
+        group_by(`Date`) %>%
+        summarise(Case_Sum =  sum(Case_Number) , .groups = 'drop' ) %>%
+        select(`Date`, `Case_Sum`)
 
+    fig <- ggplot(data)
+    g <- fig +
+        aes(x = Date, y = Case_Sum) +
+        geom_line() +
+        xlab('日期') +
+        ylab('個案數量') +
+        ggtitle(paste0(input$Country, '新冠肺炎趨勢圖'))
+    ggplotly(g)
+}
+tablecovid <- function(input, tabs, covid19){
         data  <- covid19 %>%
-            filter((`Country/Region` == input$Country) & (`Case` == input$Case_Type)) %>%
-            group_by(`Date`) %>%
-            summarise(Case_Sum =  sum(Case_Number) , .groups = 'drop' ) %>%
-            select(`Date`, `Case_Sum`)
-
-        fig <- ggplot(data)
-        g <- fig +
-            aes(x = Date, y = Case_Sum) +
-            geom_line() +
-            xlab('日期') +
-            ylab('個案數量') +
-            ggtitle(paste0(input$Country, '新冠肺炎趨勢圖'))
-        ggplotly(g)
-        #plot(Case_Sum ~ Date, data = data, type = 'l', col = 'red')
-
-    })
-
-    output$table <- renderDataTable({
-        data  <- covid19 %>%
-            filter((`Country/Region` == input$Country) & (`Case` == input$Case_Type)) %>%
+            filter((`Country/Region` == input$Country) & (`Case` == input$tabs)) %>%
             group_by(`Date`) %>%
             summarise(Case_Sum =  sum(Case_Number) , .groups = 'drop' ) %>%
             select(日期=`Date`, 個案數量=`Case_Sum`) %>%
@@ -43,10 +37,17 @@ shinyServer(function(input, output, session) {
 
         data$`日期` <- as.character(data$`日期`)
         data
-    }, options = list(
-        pageLength = 100
-        #initComplete = I("function(settings, json) {alert('Done.');}")
-    ))
+}
+shinyServer(function(input, output, session) {
+    covid19 <- read_csv('covid19.csv')
+
+    output$distPlot <- renderPlotly(plotcovid(input, 'confirmed',covid19))
+    output$distPlot1 <- renderPlotly(plotcovid(input, 'deaths',covid19))
+    output$distPlot2 <- renderPlotly(plotcovid(input, 'recovered',covid19))
+
+    output$table <- renderDataTable(tablecovid(input, 'confirmed', covid19))
+    output$table1 <- renderDataTable(tablecovid(input, 'deaths', covid19))
+    output$table2 <- renderDataTable(tablecovid(input, 'recovered', covid19))
 
     output$mymap <- renderLeaflet({
         covid19_lastest_confirmed_df <- covid19 %>%
@@ -82,7 +83,7 @@ shinyServer(function(input, output, session) {
         h3(paste0('康復數:', sum(covid19_lastest_recovered_df$Case_Number)))
     }
     )
-    observeEvent(input$Case_Type, {
+    observeEvent(input$tabs, {
         updateSelectInput(session, "Country", choices = unique(covid19$`Country/Region`))
     })
 
