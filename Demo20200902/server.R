@@ -48,6 +48,40 @@ shinyServer(function(input, output, session) {
         #initComplete = I("function(settings, json) {alert('Done.');}")
     ))
 
+    output$mymap <- renderLeaflet({
+        covid19_lastest_confirmed_df <- covid19 %>%
+            filter((`Date` == '2020-09-01') & (`Case` == 'confirmed') )
+
+        leaflet(covid19_lastest_confirmed_df) %>% addTiles() %>%
+            addCircleMarkers(
+                lat = covid19_lastest_confirmed_df$Lat,
+                lng = covid19_lastest_confirmed_df$Long,
+                radius = log(covid19_lastest_confirmed_df$Case_Number),
+                color = ifelse(covid19_lastest_confirmed_df$Case_Number >=1000000 , 'red', 'blue'),
+                stroke = FALSE,
+                fillOpacity = 0.5
+            )
+    })
+    output$overallstat <- renderUI({
+        covid19_lastest_confirmed_df <- covid19 %>%
+            filter((`Date` == '2020-09-01') & (`Case` == 'confirmed') )
+        covid19_lastest_deaths_df <- covid19 %>%
+            filter((`Date` == '2020-09-01') & (`Case` == 'deaths') )
+        h3(paste0('確診數:', sum(covid19_lastest_confirmed_df$Case_Number)))
+    }
+    )
+    output$overallstat1 <- renderUI({
+        covid19_lastest_deaths_df <- covid19 %>%
+            filter((`Date` == '2020-09-01') & (`Case` == 'deaths') )
+        h3(paste0('死亡數:', sum(covid19_lastest_deaths_df$Case_Number)))
+    }
+    )
+    output$overallstat2 <- renderUI({
+        covid19_lastest_recovered_df <- covid19 %>%
+            filter((`Date` == '2020-09-01') & (`Case` == 'deaths') )
+        h3(paste0('康復數:', sum(covid19_lastest_recovered_df$Case_Number)))
+    }
+    )
     observeEvent(input$Case_Type, {
         updateSelectInput(session, "Country", choices = unique(covid19$`Country/Region`))
     })
