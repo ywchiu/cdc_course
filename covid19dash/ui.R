@@ -1,6 +1,8 @@
 library(shiny)
 library(shinydashboard)
 library(leaflet)
+library(plotly)
+
 # Header
 header <- dashboardHeader(title= "新冠肺炎儀表板")
 
@@ -25,6 +27,9 @@ body <- dashboardBody(
                                 selected = "confirmed",
                                 inline=TRUE),
 
+               ),
+               box(width = NULL, solidHeader = TRUE,
+                   plotlyOutput("case_ranking")
                )
         )
     )

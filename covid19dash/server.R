@@ -1,16 +1,19 @@
 library(shiny)
 library(tidyverse)
 library(leaflet)
+library(plotly)
+COLORS_CHOICE <- list('confirmed'  ='orange',
+                       'deaths'    ='red',
+                       'recovered' ='green')
 
-
-vbox <- function(covid19, case_type,color, subtitle, icon_label){
+vbox <- function(covid19, case_type, subtitle, icon_label){
     renderValueBox({
         case_stat <- covid19 %>%
             filter((`Case` == case_type) & (`Date` == '2020-09-08'))
 
         valueBox(
             value = format(sum(case_stat$Case_Number), big.mark=","),
-            color = color,
+            color = as.character(COLORS_CHOICE[case_type]),
             subtitle = subtitle,
             icon = icon(icon_label)
         )
@@ -28,14 +31,7 @@ shinyServer(function(input, output) {
         data    <- covid19 %>%
             filter((`Case` == input$case_type) & (`Date` == '2020-09-08'))
 
-        colors_choice <- 'blue'
-        if (input$case_type =='confirmed'){
-            colors_choice <- 'orange'
-        }else if (input$case_type =='deaths'){
-            colors_choice <- 'red'
-        }else{
-            colors_choice <- 'green'
-        }
+        colors_choice <- as.character(COLORS_CHOICE[input$case_type])
 
         map <- leaflet(data) %>%
             addTiles() %>%
@@ -53,8 +49,25 @@ shinyServer(function(input, output) {
     })
 
     # valuebox
-    output$confiremd_all <- vbox(covid19, 'confirmed', 'orange', '確診人數', "user-md")
-    output$deaths_all    <- vbox(covid19, 'deaths',  'red', '死亡人數', "skull-crossbones")
-    output$recovered_all <- vbox(covid19, 'recovered', 'green', '康復人數', "first-aid")
+    output$confiremd_all <- vbox(covid19, 'confirmed', '確診人數', "user-md")
+    output$deaths_all    <- vbox(covid19, 'deaths',    '死亡人數', "skull-crossbones")
+    output$recovered_all <- vbox(covid19, 'recovered', '康復人數', "first-aid")
 
+    # plotly
+    output$case_ranking  <- renderPlotly({
+        case_stat <- covid19 %>%
+            filter((`Case` == input$case_type)  & (`Date` == '2020-09-08')) %>%
+            group_by(`Country/Region`, .drop=TRUE) %>%
+            summarise(Case_Number = sum(Case_Number)) %>%
+            arrange(desc(Case_Number)) %>%
+            head(10)
+
+        fig <- ggplot(case_stat) +
+            geom_bar(aes(x = reorder(`Country/Region`, Case_Number), y = Case_Number, text = paste(`Country/Region`, `Case_Number`)), stat = 'identity',fill =  as.character(COLORS_CHOICE[input$case_type])) +
+            coord_flip() +
+            xlab('') +
+            ylab('個案總數')
+
+        ggplotly(fig, tooltip = "text")
+    })
 })
