@@ -18,7 +18,13 @@ body <- dashboardBody(
                )
         ),
         column(width = 3,
-               box(width = NULL, solidHeader = TRUE
+               box(width = NULL, solidHeader = TRUE,
+                   radioButtons("case_type",
+                                label = "個案類型排行",
+                                choices = list("確診" = "confirmed", "死亡" = "deaths", "康復" = "recovered"),
+                                selected = "confirmed",
+                                inline=TRUE),
+
                )
         )
     )
