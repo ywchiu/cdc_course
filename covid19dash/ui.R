@@ -7,6 +7,11 @@ header <- dashboardHeader(title= "新冠肺炎儀表板")
 # Body
 body <- dashboardBody(
     fluidRow(
+        valueBoxOutput("confiremd_all"),
+        valueBoxOutput("recovered_all"),
+        valueBoxOutput("deaths_all")
+    ),
+    fluidRow(
         column(width = 9,
                box(width = NULL, solidHeader = TRUE,
                    leafletOutput("covidmap", height = 500)

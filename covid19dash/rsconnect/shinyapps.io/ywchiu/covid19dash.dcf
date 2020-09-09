@@ -5,8 +5,8 @@ account: ywchiu
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2774466
-bundleId: 3609434
+bundleId: 3609582
 url: https://ywchiu.shinyapps.io/covid19dash/
-when: 1599633024.823
+when: 1599634821.80891
 asMultiple: FALSE
 asStatic: FALSE
