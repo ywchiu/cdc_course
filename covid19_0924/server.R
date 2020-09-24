@@ -2,6 +2,7 @@ library(shiny)
 library(tidyverse)
 library(leaflet)
 library(plotly)
+library(lubridate)
 
 shinyServer(function(input, output, session) {
     covid19 <- read_csv('covid19.csv')
@@ -73,7 +74,56 @@ shinyServer(function(input, output, session) {
             ylab('Case Numbers') +
             xlab('Country')
 
-        ggplotly(g)
+        ggplotly(g) %>% config(displayModeBar = F)
 
     })
+
+    output$table <- renderDataTable({
+        data <- covid19 %>%
+            filter((`Case` == input$case_type2) &(`Country/Region` == input$country)) %>%
+            group_by(`Country/Region`, Date) %>%
+            summarise(Case_Number = sum(Case_Number)) %>%
+            select(Date, Case_Number) %>%
+            arrange(desc(Date))
+        data$Date <- as.character(as_date(data$Date))
+        data
+    })
+
+    output$distPlot <- renderPlotly({
+        data <- covid19 %>%
+            filter((`Case` == input$case_type2) &(`Country/Region` == input$country)) %>%
+            group_by(`Country/Region`, Date) %>%
+            summarise(Case_Number = sum(Case_Number)) %>%
+            select(Date, Case_Number)
+
+        fig <- ggplot(data)
+
+        g <- fig +
+            aes(x = Date, y = Case_Number) +
+            geom_line()
+
+        ggplotly(g) %>% config(displayModeBar = F)
+    })
+
+    output$diffPlot <- renderPlotly({
+        data <- covid19 %>%
+            filter((`Case` == input$case_type2) &(`Country/Region` == input$country)) %>%
+            group_by(`Country/Region`, Date) %>%
+            summarise(Case_Number = sum(Case_Number)) %>%
+            select(Date, Case_Number)
+        data$diff_number <- c(0,diff(data$Case_Number))
+
+        fig <- ggplot(data)
+
+        g <- fig +
+            geom_bar(aes(x= Date, y=diff_number),stat="identity", fill= 'blue')
+
+
+        ggplotly(g) %>% config(displayModeBar = F)
+    })
+
+    #observeEvent(input$country, {
+    #    updateSelectInput(session, "country", choices = unique(covid19$`Country/Region`))
+    #})
+
 })
