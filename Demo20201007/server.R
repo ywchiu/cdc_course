@@ -11,7 +11,7 @@ library(tidymodels)
 library(modeltime)
 library(recipes)
 
-predictSeries <- function(data){
+predictSeries <- function(data, Model_Type = c('ARIMA'), Predict_Length = 30){
 
     #  取得每日新增個案數量
     data$Daily_Case <- c(0, diff(data$Case_Number))
@@ -20,15 +20,22 @@ predictSeries <- function(data){
     splits <- data %>%
         time_series_split(assess = "30 days", cumulative = TRUE)
 
+    models <- c()
     # arima
+    if ('ARIMA' %in% Model_Type){
     model_fit_arima <- arima_reg() %>%
         set_engine("auto_arima") %>%
         fit(Daily_Case ~ Date, training(splits))
+    models <- c(models,model_fit_arima)
+    }
 
     # prophet
+    if ('PROPHET' %in% Model_Type){
     model_fit_prophet <- prophet_reg() %>%
         set_engine("prophet", yearly.seasonality = TRUE) %>%
         fit(Daily_Case ~ Date, training(splits))
+    models <- c(models,model_fit_prophet)
+    }
 
     # create features
     recipe_spec <- recipe(Daily_Case ~ Date, training(splits)) %>%
@@ -49,6 +56,7 @@ predictSeries <- function(data){
 
 
     # random forest
+    if ('RANDOMFOREST' %in% Model_Type){
     model_spec_rf <- rand_forest(trees = 500, min_n = 50) %>%
         set_engine("randomForest")
 
@@ -56,12 +64,13 @@ predictSeries <- function(data){
         add_model(model_spec_rf) %>%
         add_recipe(recipe_spec %>% step_rm(Date)) %>%
         fit(training(splits))
+    models <- c(models,workflow_fit_rf)
+    }
 
     #  模型表
+
     model_table <- modeltime_table(
-        model_fit_arima,
-        model_fit_prophet,
-        workflow_fit_rf
+        models
     )
 
     # 評估測試資料集
@@ -71,12 +80,12 @@ predictSeries <- function(data){
     # 產生三個月的預測
     ret <- calibration_table %>%
         modeltime_refit(data) %>%
-        modeltime_forecast(h = "3 months", actual_data = data)
+        modeltime_forecast(h = sprintf("%d days", Predict_Length), actual_data = data)
 
     ret
 }
 
-predictSeries <- function(data){
+predictSeries <- function(data, Model_Type = c('ARIMA'), Predict_Length = 30){
 
     #  取得每日新增個案數量
     data$Daily_Case <- c(0, diff(data$Case_Number))
@@ -94,31 +103,62 @@ predictSeries <- function(data){
 
     df <-  recipe_spec %>% prep() %>% juice()
 
-    # ARIMA
-    model_fit_arima <- arima_reg() %>%
-        set_engine("auto_arima") %>%
-        fit(Daily_Case ~ Date, training(splits))
+    model_table <- modeltime_table()
+    # arima
+    if ('ARIMA' %in% Model_Type){
+        model_fit_arima <- arima_reg() %>%
+            set_engine("auto_arima") %>%
+            fit(Daily_Case ~ Date, training(splits))
+        model_table <- modeltime_table(model_fit_arima)
+        #add_modeltime_model(model_table,model_fit_arima)
+    }
 
-    # PROPHET
-    model_fit_prophet <- prophet_reg() %>%
-        set_engine("prophet", yearly.seasonality = TRUE) %>%
-        fit(Daily_Case ~ Date, training(splits))
+    # prophet
+    if ('PROPHET' %in% Model_Type){
+        model_fit_prophet <- prophet_reg() %>%
+            set_engine("prophet", yearly.seasonality = TRUE) %>%
+            fit(Daily_Case ~ Date, training(splits))
+        model_table <- modeltime_table(model_fit_prophet)
+        #add_modeltime_model(model_table,model_fit_prophet)
 
-    # RANDOM FOREST
-    model_spec_rf <- rand_forest(trees = 500, min_n = 50) %>%
-        set_engine("randomForest")
+    }
 
-    workflow_fit_rf <- workflow() %>%
-        add_model(model_spec_rf) %>%
-        add_recipe(recipe_spec %>% step_rm(Date)) %>%
-        fit(training(splits))
+    # create features
+    recipe_spec <- recipe(Daily_Case ~ Date, training(splits)) %>%
+        step_timeseries_signature(Date) %>%
+        step_rm(contains("am.pm"),
+                contains("year"),
+                contains("hour"),
+                contains("minute"),
+                contains("second"),
+                contains("xts"),
+                'Date_index.num') %>%
+        step_fourier(Date, period = 365, K = 7) %>%
+        step_dummy(all_nominal())
+
+    df <- recipe_spec %>%
+        prep() %>%
+        juice()
+
+
+    # random forest
+    if ('RANDOMFOREST' %in% Model_Type){
+        model_spec_rf <- rand_forest(trees = 500, min_n = 50) %>%
+            set_engine("randomForest")
+
+        workflow_fit_rf <- workflow() %>%
+            add_model(model_spec_rf) %>%
+            add_recipe(recipe_spec %>% step_rm(Date)) %>%
+            fit(training(splits))
+        #models$randomforest <-workflow_fit_rf
+        model_table <- modeltime_table(workflow_fit_rf)
+        #add_modeltime_model(model_table,workflow_fit_rf)
+    }
 
     # Model Table
-    model_table <- modeltime_table(
-        model_fit_arima,
-        model_fit_prophet,
-        workflow_fit_rf
-    )
+    #model_table <- modeltime_table(
+
+    #)
 
     # 套用到測試資料集產生結果
     calibration_table <- model_table %>%
@@ -127,7 +167,7 @@ predictSeries <- function(data){
     # 產生三個月的預測
     ret <- calibration_table %>%
         modeltime_refit(data) %>%
-        modeltime_forecast(h = "3 months", actual_data = data)
+        modeltime_forecast(h = sprintf("%d days", Predict_Length), actual_data = data)
     ret
 }
 
@@ -239,6 +279,24 @@ shinyServer(function(input, output, session) {
             plot_modeltime_forecast(.interactive = TRUE,.title="預測結果", .y_lab = "New daily cases",.legend_show = TRUE)
     })
 
+    # 產生預測結果
+    output$predictPlot2 <- renderPlotly({
+
+        ## Input Data
+        data <- covid19 %>%
+            filter((`Case` == input$Case_Type2) & (`Country/Region` == input$Country2)) %>%
+            group_by(Date) %>%
+            summarize(Case_Number = sum(Case_Number)) %>%
+            select(Date, Case_Number)
+        print(input$Model_Type)
+        print(input$Predict_Length)
+        if (!is.null(input$Model_Type)){
+            ret <- predictSeries(data, Model_Type = input$Model_Type, Predict_Length = input$Predict_Length)
+
+            ret %>%
+                plot_modeltime_forecast(.interactive = TRUE,.title="預測結果", .y_lab = "New daily cases",.legend_show = TRUE)
+        }
+    })
     ## 個案類型折線圖
     output$distPlot <- renderPlotly({
         data <- covid19 %>%

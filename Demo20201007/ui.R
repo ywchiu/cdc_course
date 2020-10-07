@@ -105,7 +105,7 @@ predictCountry <- tabItem("predictcountry",
                                                      choices = c('Taiwan*', 'US', 'China'))
                                      ),
                                 column(width = 4,
-                                     selectInput("Case_Type",
+                                     selectInput("Case_Type2",
                                                      "個案情形:",
                                                      choices = c('確診'='confirmed',
                                                                  '死亡'='deaths',
@@ -115,7 +115,7 @@ predictCountry <- tabItem("predictcountry",
                                 column(width = 4,
                                        selectInput("Model_Type",
                                                    "模型選擇:",
-                                                   multiple =TRUE,
+                                                   multiple =FALSE,
                                                    choices = c('ARIMA'='ARIMA',
                                                                'PROPHET'='PROPHET',
                                                                'RANDOMFOREST'='RANDOMFOREST')),
@@ -132,6 +132,13 @@ predictCountry <- tabItem("predictcountry",
                                                      value = 7,
                                                      step = 1
                                          )
+                                     )
+                              )
+                          ),
+                          fluidRow(
+                              column(width = 12,
+                                     box(width = NULL, solidHeader = TRUE,
+                                         plotlyOutput("predictPlot2")
                                      )
                               )
                           ),
