@@ -43,6 +43,13 @@ byCountry <- tabItem("bycountry",
                                 )
                          )
                      ),
+                     fluidRow(
+                         column(width = 12,
+                                box(width = NULL, solidHeader = TRUE,
+                                    plotlyOutput("predictPlot")
+                                )
+                         )
+                     ),
 
 )
 
@@ -89,11 +96,53 @@ dashboard <- tabItem("dashboard",
 )
 
 
+predictCountry <- tabItem("predictcountry",
+                          fluidRow(
+                              box(width = NULL, solidHeader = TRUE,
+                                column(width = 4,
+                                     selectInput("Country2",
+                                                     "國家:",
+                                                     choices = c('Taiwan*', 'US', 'China'))
+                                     ),
+                                column(width = 4,
+                                     selectInput("Case_Type",
+                                                     "個案情形:",
+                                                     choices = c('確診'='confirmed',
+                                                                 '死亡'='deaths',
+                                                                 '康復'='recovered')),
+
+                                     ),
+                                column(width = 4,
+                                       selectInput("Model_Type",
+                                                   "模型選擇:",
+                                                   multiple =TRUE,
+                                                   choices = c('ARIMA'='ARIMA',
+                                                               'PROPHET'='PROPHET',
+                                                               'RANDOMFOREST'='RANDOMFOREST')),
+                                        )
+                              )
+                          ),
+                          fluidRow(
+                              column(width = 12,
+                                     box(width = NULL, solidHeader = TRUE,
+                                         sliderInput("Predict_Length",
+                                                     "預測週期:",
+                                                     min = 7,
+                                                     max = 90,
+                                                     value = 7,
+                                                     step = 1
+                                         )
+                                     )
+                              )
+                          ),
+)
+
 # 網頁內容
 body <- dashboardBody(
     tabItems(
         dashboard,
-        byCountry
+        byCountry,
+        predictCountry
     )
 )
 
@@ -103,7 +152,8 @@ dashboardPage(
     dashboardSidebar(
         sidebarMenu(
             menuItem("儀表板", tabName = "dashboard"),
-            menuItem("各國疫情分析", tabName = "bycountry")
+            menuItem("各國疫情分析", tabName = "bycountry"),
+            menuItem("各國疫情預測", tabName = "predictcountry")
         )
     ),
     body
