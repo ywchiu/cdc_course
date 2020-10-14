@@ -12,82 +12,9 @@ library(modeltime)
 library(recipes)
 library(DBI)
 
-predictSeries <- function(data, Model_Type = c('ARIMA'), Predict_Length = 30){
+predictSeries <- function(data, Model_Type = 'ARIMA', Predict_Length = 30){
 
-    #  取得每日新增個案數量
-    data$Daily_Case <- c(0, diff(data$Case_Number))
-
-    # 切分成訓練與測試資料集:(測試資料集：最後30 天的資料)
-    splits <- data %>%
-        time_series_split(assess = "30 days", cumulative = TRUE)
-
-    models <- c()
-    # arima
-    if ('ARIMA' %in% Model_Type){
-    model_fit_arima <- arima_reg() %>%
-        set_engine("auto_arima") %>%
-        fit(Daily_Case ~ Date, training(splits))
-    models <- c(models,model_fit_arima)
-    }
-
-    # prophet
-    if ('PROPHET' %in% Model_Type){
-    model_fit_prophet <- prophet_reg() %>%
-        set_engine("prophet", yearly.seasonality = TRUE) %>%
-        fit(Daily_Case ~ Date, training(splits))
-    models <- c(models,model_fit_prophet)
-    }
-
-    # create features
-    recipe_spec <- recipe(Daily_Case ~ Date, training(splits)) %>%
-        step_timeseries_signature(Date) %>%
-        step_rm(contains("am.pm"),
-                contains("year"),
-                contains("hour"),
-                contains("minute"),
-                contains("second"),
-                contains("xts"),
-                'Date_index.num') %>%
-        step_fourier(Date, period = 365, K = 7) %>%
-        step_dummy(all_nominal())
-
-    df <- recipe_spec %>%
-        prep() %>%
-        juice()
-
-
-    # random forest
-    if ('RANDOMFOREST' %in% Model_Type){
-    model_spec_rf <- rand_forest(trees = 500, min_n = 50) %>%
-        set_engine("randomForest")
-
-    workflow_fit_rf <- workflow() %>%
-        add_model(model_spec_rf) %>%
-        add_recipe(recipe_spec %>% step_rm(Date)) %>%
-        fit(training(splits))
-    models <- c(models,workflow_fit_rf)
-    }
-
-    #  模型表
-
-    model_table <- modeltime_table(
-        models
-    )
-
-    # 評估測試資料集
-    calibration_table <- model_table %>%
-        modeltime_calibrate(testing(splits))
-
-    # 產生三個月的預測
-    ret <- calibration_table %>%
-        modeltime_refit(data) %>%
-        modeltime_forecast(h = sprintf("%d days", Predict_Length), actual_data = data)
-
-    ret
-}
-
-predictSeries <- function(data, Model_Type = c('ARIMA'), Predict_Length = 30){
-
+    data$Date <- as.Date(data$Date)
     #  取得每日新增個案數量
     data$Daily_Case <- c(0, diff(data$Case_Number))
 
@@ -106,7 +33,7 @@ predictSeries <- function(data, Model_Type = c('ARIMA'), Predict_Length = 30){
 
     model_table <- modeltime_table()
     # arima
-    if ('ARIMA' %in% Model_Type){
+    if (Model_Type ==  'ARIMA'){
         model_fit_arima <- arima_reg() %>%
             set_engine("auto_arima") %>%
             fit(Daily_Case ~ Date, training(splits))
@@ -115,7 +42,7 @@ predictSeries <- function(data, Model_Type = c('ARIMA'), Predict_Length = 30){
     }
 
     # prophet
-    if ('PROPHET' %in% Model_Type){
+    if (Model_Type == 'PROPHET' ){
         model_fit_prophet <- prophet_reg() %>%
             set_engine("prophet", yearly.seasonality = TRUE) %>%
             fit(Daily_Case ~ Date, training(splits))
@@ -143,7 +70,7 @@ predictSeries <- function(data, Model_Type = c('ARIMA'), Predict_Length = 30){
 
 
     # random forest
-    if ('RANDOMFOREST' %in% Model_Type){
+    if (Model_Type == 'RANDOMFOREST'){
         model_spec_rf <- rand_forest(trees = 500, min_n = 50) %>%
             set_engine("randomForest")
 
@@ -275,33 +202,15 @@ shinyServer(function(input, output, session) {
         data
     })
 
-    # 產生預測結果
-    output$predictPlot <- renderPlotly({
-
-        ## Input Data
-        data <- covid19 %>%
-            filter((`Case` == input$Case_Type) &(`Country/Region` == input$Country)) %>%
-            group_by(Date) %>%
-            summarize(Case_Number = sum(Case_Number)) %>%
-            select(Date, Case_Number)
-
-        ret <- predictSeries(data)
-
-        ret %>%
-            plot_modeltime_forecast(.interactive = TRUE,.title="預測結果", .y_lab = "New daily cases",.legend_show = TRUE)
-    })
 
     # 產生預測結果
     output$predictPlot2 <- renderPlotly({
 
         ## Input Data
-        data <- covid19 %>%
-            filter((`Case` == input$Case_Type2) & (`Country/Region` == input$Country2)) %>%
-            group_by(Date) %>%
-            summarize(Case_Number = sum(Case_Number)) %>%
-            select(Date, Case_Number)
-        print(input$Model_Type)
-        print(input$Predict_Length)
+        data <- read_sql_query('demo.db',
+                sprintf("SELECT `Date`, SUM(Case_Number) as Case_Number FROM covid19 WHERE `Case` = '%s' AND `Country/Region` = '%s' GROUP BY `Date`", input$Case_Type2, input$Country2) )
+
+
         if (!is.null(input$Model_Type)){
             ret <- predictSeries(data, Model_Type = input$Model_Type, Predict_Length = input$Predict_Length)
 
@@ -327,11 +236,8 @@ shinyServer(function(input, output, session) {
 
     # 繪製新增數量 (Bar)
     output$dailyNewPlot <- renderPlotly({
-        data <- covid19 %>%
-            filter((`Case` == input$Case_Type) &(`Country/Region` == input$Country)) %>%
-            group_by(Date) %>%
-            summarize(Case_Number = sum(Case_Number)) %>%
-            select(Date, Case_Number)
+        data <- read_sql_query('demo.db',
+            sprintf("SELECT Date, SUM(Case_Number) AS Case_Number FROM covid19 WHERE `Case` = '%s' AND `Country/Region` = '%s' GROUP BY Date",input$Case_Type,  input$Country) )
 
         data$Daily_Number <- c(0, diff(data$Case_Number))
 
