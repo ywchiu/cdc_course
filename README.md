@@ -54,6 +54,8 @@
 - https://rpubs.com/ywchiu/Demo20200930
 
 
+
+
 ## Workshop
 - https://rpubs.com/ywchiu/Workshop20200630
 - https://rpubs.com/ywchiu/Workshop20200714
@@ -63,3 +65,6 @@
 
 ### R 文字探勘
 - https://rpubs.com/ywchiu/Demo20200702
+
+### R 資料視覺化
+- https://rpubs.com/ywchiu/Demo20201021
