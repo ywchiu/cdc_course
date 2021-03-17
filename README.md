@@ -5,8 +5,10 @@
 - IP: http://52.233.66.227/
 - Web Username: david@largitdata.com
 - Web Password: largitdata
+- DB Host:52.233.66.227
+- DB Port:5432
 - DB Username: postgres
-- DB Password: largitdata
+- DB Password: admin
 
 
 ## Python 基礎教學
