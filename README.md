@@ -1,5 +1,14 @@
 # 疾管署教育訓練課程
 
+## PostgreSQL
+
+- IP: http://52.233.66.227/
+- Web Username: david@largitdata.com
+- Web Password: largitdata
+- DB Username: postgres
+- DB Password: largitdata
+
+
 ## Python 基礎教學
 
 ### Python 程式設計課程基礎
