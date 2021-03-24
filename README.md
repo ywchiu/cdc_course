@@ -2,7 +2,7 @@
 
 ## PostgreSQL
 
-- IP: http://52.183.58.65/
+- IP: http://52.183.58.65/pgadmin4/l
 - Web Username: david@largitdata.com
 - Web Password: largitdata
 - DB Host:52.183.58.65
