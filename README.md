@@ -2,13 +2,13 @@
 
 ## PostgreSQL
 
-- IP: http://52.233.66.227/
+- IP: http://52.183.58.65/
 - Web Username: david@largitdata.com
 - Web Password: largitdata
-- DB Host:52.233.66.227
+- DB Host:52.183.58.65
 - DB Port:5432
 - DB Username: postgres
-- DB Password: admin
+- DB Password: largitdata
 
 
 ## Python 基礎教學
