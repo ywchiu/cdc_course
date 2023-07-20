@@ -1,15 +1,8 @@
 # 疾管署教育訓練課程
 
-## PostgreSQL
+## Python 快速課程
 
-- IP: http://52.183.58.65/pgadmin4/
-- Web Username: david@largitdata.com
-- Web Password: largitdata
-- DB Host:52.183.58.65
-- DB Port:5432
-- DB Username: postgres
-- DB Password: largitdata
-
+- https://colab.research.google.com/drive/12SygQfXqVFimynLnTQT800kBkT5JPIJ4?usp=sharing
 
 ## Python 基礎教學
 
