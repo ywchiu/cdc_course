@@ -2,7 +2,11 @@
 
 ## Python 快速課程
 
+### 20230720
 - https://colab.research.google.com/drive/12SygQfXqVFimynLnTQT800kBkT5JPIJ4?usp=sharing
+
+### 20230727
+- https://colab.research.google.com/drive/1Y47-aSd7mgr1E33W95iEGG1pZfoMFClQ?usp=sharing
 
 ## Python 基礎教學
 
