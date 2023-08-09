@@ -3,7 +3,7 @@
 ## R 快速課程
 
 ### 20230809
-- https://rpubs.com/ywchiu/Demo20230809_3
+- https://rpubs.com/ywchiu/Demo20230809_2
 
 ## Python 快速課程
 
